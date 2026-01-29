@@ -80,3 +80,9 @@ persisted_queries.json
 .eslintcache
 
 .vercel
+
+# Hardhat
+cache
+artifacts
+typechain-types
+.openzeppelin
