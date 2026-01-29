@@ -71,6 +71,7 @@ export default function UsernameProfileSectionHeatmap() {
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isDataFetched, setIsDataFetched] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const [totalTx, setTotalTx] = useState<number>(0);
   const [tokenSwapCount, setTokenSwapCount] = useState<number>(0);
   const [ensCount, setEnsCount] = useState<number>(0);
@@ -254,12 +255,14 @@ export default function UsernameProfileSectionHeatmap() {
   const fetchData = useCallback(
     async (addrs: Address) => {
       setIsLoading(true);
+      setError(null);
 
       try {
         const allTransactions: Transaction[] = [];
         let allEthereumDeployments: string[] = [];
         let allBaseDeployments: string[] = [];
         let allSepoliaDeployments: string[] = [];
+        let hasAnyError = false;
 
         const [
           ethereumTransactions,
@@ -267,12 +270,26 @@ export default function UsernameProfileSectionHeatmap() {
           baseInternalTransactions,
           sepoliaTransactions,
         ] = await Promise.all([
-          fetchTransactions(`/api/proxy?apiType=etherscan&address=${addrs}`).catch(() => []),
-          fetchTransactions(`/api/proxy?apiType=basescan&address=${addrs}`).catch(() => []),
-          fetchTransactions(`/api/proxy?apiType=basescan-internal&address=${addrs}`).catch(
-            () => [],
-          ),
-          fetchTransactions(`/api/proxy?apiType=base-sepolia&address=${addrs}`).catch(() => []),
+          fetchTransactions(`/api/proxy?apiType=etherscan&address=${addrs}`).catch((e) => {
+            hasAnyError = true;
+            console.error('Failed to fetch Ethereum transactions:', e);
+            return [];
+          }),
+          fetchTransactions(`/api/proxy?apiType=basescan&address=${addrs}`).catch((e) => {
+            hasAnyError = true;
+            console.error('Failed to fetch Base transactions:', e);
+            return [];
+          }),
+          fetchTransactions(`/api/proxy?apiType=basescan-internal&address=${addrs}`).catch((e) => {
+            hasAnyError = true;
+            console.error('Failed to fetch Base internal transactions:', e);
+            return [];
+          }),
+          fetchTransactions(`/api/proxy?apiType=base-sepolia&address=${addrs}`).catch((e) => {
+            hasAnyError = true;
+            console.error('Failed to fetch Sepolia transactions:', e);
+            return [];
+          }),
         ]);
 
         const filteredEthereumTransactions = filterTransactions(ethereumTransactions, [addrs]);
@@ -310,6 +327,11 @@ export default function UsernameProfileSectionHeatmap() {
         ];
 
         if (allTransactions.length === 0) {
+          // If we have errors and no transactions, throw to show error UI
+          if (hasAnyError) {
+            throw new Error('Failed to load transaction data');
+          }
+          // Otherwise user just has no transactions - show empty state
           return;
         }
 
@@ -366,6 +388,7 @@ export default function UsernameProfileSectionHeatmap() {
         setBaseDeployments(allBaseDeployments);
       } catch (e) {
         console.error('Error fetching data:', e);
+        setError(e instanceof Error ? e.message : 'Failed to load activity data');
       } finally {
         setIsLoading(false);
         setIsDataFetched(true);
@@ -409,6 +432,25 @@ export default function UsernameProfileSectionHeatmap() {
         <div className="relative mt-6 rounded-3xl border border-palette-line/20 p-10">
           <div className="absolute inset-0 flex items-center justify-center">
             <Image src="/images/base-loading.gif" alt="" width={22} height={22} />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section>
+        <UsernameProfileSectionTitle title="Activity" />
+        <div className="mt-6 rounded-3xl border border-palette-line/20 p-10">
+          <div className="flex flex-col items-center justify-center gap-4 text-center">
+            <Icon name="info" color="currentColor" height="24px" />
+            <div>
+              <p className="text-sm font-medium text-palette-foreground">
+                Unable to load activity data
+              </p>
+              <p className="mt-1 text-xs text-palette-foregroundMuted">{error}</p>
+            </div>
           </div>
         </div>
       </section>
