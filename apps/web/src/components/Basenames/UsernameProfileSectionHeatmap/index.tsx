@@ -262,6 +262,7 @@ export default function UsernameProfileSectionHeatmap() {
         let allEthereumDeployments: string[] = [];
         let allBaseDeployments: string[] = [];
         let allSepoliaDeployments: string[] = [];
+        let hasAnyError = false;
 
         const [
           ethereumTransactions,
@@ -269,12 +270,26 @@ export default function UsernameProfileSectionHeatmap() {
           baseInternalTransactions,
           sepoliaTransactions,
         ] = await Promise.all([
-          fetchTransactions(`/api/proxy?apiType=etherscan&address=${addrs}`).catch(() => []),
-          fetchTransactions(`/api/proxy?apiType=basescan&address=${addrs}`).catch(() => []),
-          fetchTransactions(`/api/proxy?apiType=basescan-internal&address=${addrs}`).catch(
-            () => [],
-          ),
-          fetchTransactions(`/api/proxy?apiType=base-sepolia&address=${addrs}`).catch(() => []),
+          fetchTransactions(`/api/proxy?apiType=etherscan&address=${addrs}`).catch((e) => {
+            hasAnyError = true;
+            console.error('Failed to fetch Ethereum transactions:', e);
+            return [];
+          }),
+          fetchTransactions(`/api/proxy?apiType=basescan&address=${addrs}`).catch((e) => {
+            hasAnyError = true;
+            console.error('Failed to fetch Base transactions:', e);
+            return [];
+          }),
+          fetchTransactions(`/api/proxy?apiType=basescan-internal&address=${addrs}`).catch((e) => {
+            hasAnyError = true;
+            console.error('Failed to fetch Base internal transactions:', e);
+            return [];
+          }),
+          fetchTransactions(`/api/proxy?apiType=base-sepolia&address=${addrs}`).catch((e) => {
+            hasAnyError = true;
+            console.error('Failed to fetch Sepolia transactions:', e);
+            return [];
+          }),
         ]);
 
         const filteredEthereumTransactions = filterTransactions(ethereumTransactions, [addrs]);
@@ -312,6 +327,11 @@ export default function UsernameProfileSectionHeatmap() {
         ];
 
         if (allTransactions.length === 0) {
+          // If we have errors and no transactions, throw to show error UI
+          if (hasAnyError) {
+            throw new Error('Failed to load transaction data');
+          }
+          // Otherwise user just has no transactions - show empty state
           return;
         }
 
