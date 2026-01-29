@@ -9,7 +9,11 @@ type RegistrationBody = {
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as RegistrationBody;
-    const { username, email, password } = body;
+    let { username, email, password } = body;
+
+    // Trim whitespace from username and email
+    username = typeof username === 'string' ? username.trim() : '';
+    email = typeof email === 'string' ? email.trim() : '';
 
     // Validate required fields
     if (!username || !email || !password) {
@@ -20,7 +24,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate username length
-    if (typeof username !== 'string' || username.length < 3) {
+    if (username.length < 3) {
       return NextResponse.json(
         { error: 'Username must be at least 3 characters' },
         { status: 400 }
@@ -29,7 +33,7 @@ export async function POST(request: NextRequest) {
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (typeof email !== 'string' || !emailRegex.test(email)) {
+    if (!emailRegex.test(email)) {
       return NextResponse.json(
         { error: 'Invalid email format' },
         { status: 400 }

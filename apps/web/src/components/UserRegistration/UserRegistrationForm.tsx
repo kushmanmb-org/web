@@ -2,6 +2,7 @@ import { Button, ButtonSizes, ButtonVariants } from 'apps/web/src/components/But
 import Fieldset from 'apps/web/src/components/Fieldset';
 import Input from 'apps/web/src/components/Input';
 import Label from 'apps/web/src/components/Label';
+import Link from 'apps/web/src/components/Link';
 import { useCallback, useState } from 'react';
 
 type FormData = {
@@ -34,17 +35,19 @@ export default function UserRegistrationForm() {
   const validateForm = useCallback((): boolean => {
     const newErrors: FormErrors = {};
 
-    // Username validation
-    if (!formData.username.trim()) {
+    // Username validation (check trimmed length for consistency)
+    const trimmedUsername = formData.username.trim();
+    if (!trimmedUsername) {
       newErrors.username = 'Username is required';
-    } else if (formData.username.length < 3) {
+    } else if (trimmedUsername.length < 3) {
       newErrors.username = 'Username must be at least 3 characters';
     }
 
     // Email validation
-    if (!formData.email.trim()) {
+    const trimmedEmail = formData.email.trim();
+    if (!trimmedEmail) {
       newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
       newErrors.email = 'Please enter a valid email address';
     }
 
@@ -83,6 +86,14 @@ export default function UserRegistrationForm() {
     [errors],
   );
 
+  const handleButtonClick = useCallback(() => {
+    // Trigger form submission
+    const form = document.querySelector('form');
+    if (form) {
+      form.requestSubmit();
+    }
+  }, []);
+
   const handleSubmit = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -103,8 +114,8 @@ export default function UserRegistrationForm() {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              username: formData.username,
-              email: formData.email,
+              username: formData.username.trim(),
+              email: formData.email.trim(),
               password: formData.password,
             }),
           });
@@ -161,6 +172,7 @@ export default function UserRegistrationForm() {
             value={formData.username}
             onChange={handleInputChange('username')}
             disabled={isSubmitting}
+            autoComplete="username"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600"
             placeholder="Choose a username"
           />
@@ -177,6 +189,7 @@ export default function UserRegistrationForm() {
             value={formData.email}
             onChange={handleInputChange('email')}
             disabled={isSubmitting}
+            autoComplete="email"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600"
             placeholder="your@email.com"
           />
@@ -193,6 +206,7 @@ export default function UserRegistrationForm() {
             value={formData.password}
             onChange={handleInputChange('password')}
             disabled={isSubmitting}
+            autoComplete="new-password"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600"
             placeholder="Min. 8 characters"
           />
@@ -209,6 +223,7 @@ export default function UserRegistrationForm() {
             value={formData.confirmPassword}
             onChange={handleInputChange('confirmPassword')}
             disabled={isSubmitting}
+            autoComplete="new-password"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600"
             placeholder="Re-enter password"
           />
@@ -218,7 +233,7 @@ export default function UserRegistrationForm() {
         </Fieldset>
 
         <Button
-          type="submit"
+          onClick={handleButtonClick}
           variant={ButtonVariants.Black}
           size={ButtonSizes.Medium}
           fullWidth
@@ -230,9 +245,9 @@ export default function UserRegistrationForm() {
 
         <p className="text-center text-sm text-gray-600">
           Already have an account?{' '}
-          <a href="/login" className="text-blue-600 hover:underline">
+          <Link href="/login" className="text-blue-600 hover:underline">
             Log in
-          </a>
+          </Link>
         </p>
       </form>
     </div>
