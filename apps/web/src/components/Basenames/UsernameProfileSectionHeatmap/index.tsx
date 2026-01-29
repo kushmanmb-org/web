@@ -378,7 +378,7 @@ export default function UsernameProfileSectionHeatmap() {
         setEthereumDeployments(allEthereumDeployments);
         setBaseDeployments(allBaseDeployments);
       } catch (e) {
-        console.error('Error fetching data:', e);
+        logger.error('Error fetching data:', e);
       } finally {
         setIsLoading(false);
         setIsDataFetched(true);
