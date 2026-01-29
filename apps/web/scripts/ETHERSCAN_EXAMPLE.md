@@ -10,7 +10,7 @@ This directory contains an example demonstrating how to fetch data from the Ethe
 
 ### Basic Example
 
-The `fetchEtherscanExample.js` file demonstrates the simplest possible fetch request:
+The `fetchEtherscanExample.js` file demonstrates the minimal fetch pattern:
 
 ```javascript
 const options = { method: 'GET' };
@@ -19,6 +19,18 @@ fetch('https://api.etherscan.io/v2/api', options)
   .then(res => res.json())
   .then(res => console.log(res))
   .catch(err => console.error(err));
+```
+
+**Note:** The URL above is a base endpoint. For actual use, you need to add query parameters:
+- `module` - API module (e.g., 'account')  
+- `action` - API action (e.g., 'txlist', 'txlistinternal')
+- `address` - Ethereum address to query
+- `chainid` - Chain ID (1 for Ethereum, 8453 for Base, 84532 for Base Sepolia)
+- `apikey` - Your Etherscan API key
+
+**Complete URL example:**
+```
+https://api.etherscan.io/v2/api?module=account&action=txlist&address=0x...&chainid=1&apikey=YOUR_KEY
 ```
 
 ### Recommended: Using the Proxy Endpoint
@@ -54,10 +66,13 @@ const data = await response.json();
 To use the Etherscan API, you need to set up environment variables:
 
 1. Copy `.env.local.example` to `.env.local`
-2. Add your Etherscan API key:
+2. Add your API keys:
    ```
-   ETHERSCAN_API_KEY=your_api_key_here
+   ETHERSCAN_API_KEY=your_etherscan_api_key_here
+   BASESCAN_API_KEY=your_basescan_api_key_here
    ```
+
+**Note:** The proxy implementation uses `ETHERSCAN_API_KEY` for all Etherscan API v2 calls (including Base network queries). The `BASESCAN_API_KEY` is available but not currently used by the proxy endpoint.
 
 ## API Documentation
 
