@@ -21,20 +21,56 @@ function validateEmail(email: string): boolean {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = (await request.json()) as HelpRequestData;
+    let body: HelpRequestData;
+
+    try {
+      body = (await request.json()) as HelpRequestData;
+    } catch (error) {
+      return NextResponse.json(
+        { success: false, message: 'Invalid request body' },
+        { status: 400 },
+      );
+    }
 
     const { name, email, subject, message, category } = body;
 
-    // Validate required fields
-    if (!name || !email || !subject || !message) {
+    // Validate required fields and trim whitespace
+    const trimmedName = name?.trim();
+    const trimmedEmail = email?.trim();
+    const trimmedSubject = subject?.trim();
+    const trimmedMessage = message?.trim();
+
+    if (!trimmedName || !trimmedEmail || !trimmedSubject || !trimmedMessage) {
       return NextResponse.json(
         { success: false, message: 'Missing required fields' },
         { status: 400 },
       );
     }
 
+    // Validate field lengths
+    if (trimmedName.length > 100) {
+      return NextResponse.json(
+        { success: false, message: 'Name must not exceed 100 characters' },
+        { status: 400 },
+      );
+    }
+
+    if (trimmedEmail.length > 255) {
+      return NextResponse.json(
+        { success: false, message: 'Email must not exceed 255 characters' },
+        { status: 400 },
+      );
+    }
+
+    if (trimmedSubject.length > 200) {
+      return NextResponse.json(
+        { success: false, message: 'Subject must not exceed 200 characters' },
+        { status: 400 },
+      );
+    }
+
     // Validate email format
-    if (!validateEmail(email)) {
+    if (!validateEmail(trimmedEmail)) {
       return NextResponse.json(
         { success: false, message: 'Invalid email address' },
         { status: 400 },
@@ -42,27 +78,27 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate message length
-    if (message.length < 10) {
+    if (trimmedMessage.length < 10) {
       return NextResponse.json(
         { success: false, message: 'Message must be at least 10 characters long' },
         { status: 400 },
       );
     }
 
-    if (message.length > 5000) {
+    if (trimmedMessage.length > 5000) {
       return NextResponse.json(
         { success: false, message: 'Message must not exceed 5000 characters' },
         { status: 400 },
       );
     }
 
-    // Log the help request
+    // Log the help request (without PII)
     logger.info('Help request received', {
-      name,
-      email,
-      subject,
+      nameLength: trimmedName.length,
+      emailDomain: trimmedEmail.split('@')[1] || 'unknown',
+      subject: trimmedSubject,
       category,
-      messageLength: message.length,
+      messageLength: trimmedMessage.length,
     });
 
     // In a real implementation, you would:

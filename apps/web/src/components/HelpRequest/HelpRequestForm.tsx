@@ -60,10 +60,10 @@ export default function HelpRequestForm() {
 
       try {
         const requestData: HelpRequestData = {
-          name: formState.name,
-          email: formState.email,
-          subject: formState.subject,
-          message: formState.message,
+          name: formState.name.trim(),
+          email: formState.email.trim(),
+          subject: formState.subject.trim(),
+          message: formState.message.trim(),
           category: formState.category || undefined,
         };
 
@@ -127,6 +127,7 @@ export default function HelpRequestForm() {
           value={formState.name}
           onChange={handleInputChange}
           required
+          maxLength={100}
           className="w-full rounded-lg border border-gray-40/20 bg-white px-4 py-3 text-black transition-colors focus:border-blue focus:outline-none"
           placeholder="Your full name"
         />
@@ -141,6 +142,7 @@ export default function HelpRequestForm() {
           value={formState.email}
           onChange={handleInputChange}
           required
+          maxLength={255}
           className="w-full rounded-lg border border-gray-40/20 bg-white px-4 py-3 text-black transition-colors focus:border-blue focus:outline-none"
           placeholder="your.email@example.com"
         />
@@ -172,6 +174,7 @@ export default function HelpRequestForm() {
           value={formState.subject}
           onChange={handleInputChange}
           required
+          maxLength={200}
           className="w-full rounded-lg border border-gray-40/20 bg-white px-4 py-3 text-black transition-colors focus:border-blue focus:outline-none"
           placeholder="Brief description of your issue"
         />
@@ -198,6 +201,8 @@ export default function HelpRequestForm() {
 
       {submitStatus.type && (
         <div
+          role="alert"
+          aria-live="polite"
           className={`rounded-lg p-4 ${
             submitStatus.type === 'success'
               ? 'bg-green-100 text-green-800'
