@@ -22,9 +22,9 @@ Protects the `main` and `master` branches with the following rules:
   - Code owner review required (when CODEOWNERS file exists)
   - All review threads must be resolved
 - **Required Status Checks**:
-  - Build must pass
-  - Lint must pass
-  - Tests must pass
+  - Build must pass (`build` job)
+  - Unit tests must pass (`Jest` job)
+  - E2E tests must pass (`e2e` job)
   - Status checks must be up-to-date with the base branch
 
 **Applies to**: `main`, `master` branches
@@ -43,7 +43,7 @@ Provides additional protection for critical configuration files and directories:
   - Code owner review required
   - All review threads must be resolved
 
-**Applies to**: `main`, `master`, `develop`, and `release/*` branches
+**Applies to**: `main`, `master`, and `release/*` branches
 
 ### 3. Release Branches Protection (`release-branches-protection.json`)
 
@@ -56,10 +56,9 @@ Protects release and hotfix branches with strict requirements:
   - Code owner review required
   - All review threads must be resolved
 - **Required Status Checks**:
-  - Build must pass
-  - Lint must pass
-  - Tests must pass
-  - E2E tests must pass
+  - Build must pass (`build` job)
+  - Unit tests must pass (`Jest` job)
+  - E2E tests must pass (`e2e` job)
   - All checks must be up-to-date
 
 **Applies to**: `release/*`, `hotfix/*` branches

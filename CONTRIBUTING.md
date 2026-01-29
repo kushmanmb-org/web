@@ -57,7 +57,7 @@ This repository uses GitHub rulesets to enforce branch protection and quality st
 
 - **Protected Branches**: `main`, `master`, `release/*`, and `hotfix/*` branches are protected
 - **Required Reviews**: Pull requests require at least 1 approving review (2 for critical paths)
-- **Status Checks**: All builds, lints, and tests must pass before merging
+- **Status Checks**: All CI workflows (`build`, `Jest`, `e2e`) must pass before merging
 - **Code Owners**: Changes to critical files require review from code owners (see `.github/CODEOWNERS`)
 - **Protected Paths**: Critical configuration files (package.json, yarn.lock, .github/*, tsconfig files) have additional protection
 

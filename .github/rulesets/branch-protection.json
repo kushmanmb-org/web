@@ -43,11 +43,11 @@
             "integration_id": null
           },
           {
-            "context": "lint",
+            "context": "Jest",
             "integration_id": null
           },
           {
-            "context": "test",
+            "context": "e2e",
             "integration_id": null
           }
         ],
