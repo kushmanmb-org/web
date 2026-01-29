@@ -57,6 +57,48 @@ There are three projects which can be run individually.
 yarn workspace @app/web dev
 ```
 
+## MultiSig Wallet
+
+This repository includes a comprehensive **Multi-Signature Wallet** implementation built with Solidity ^0.8.20 for the Base ecosystem. 
+
+### Features
+
+- ✅ **Multi-Signature Approval**: Requires N-of-M owner confirmations for high-value transactions
+- ✅ **Daily Spending Limit**: Single-owner transactions within daily allowance for operational efficiency
+- ✅ **Gas-Efficient**: Innovative bitmap-based confirmation tracking
+- ✅ **Owner Management**: Add, remove, or change owners with multi-sig approval
+- ✅ **Reentrancy Protection**: Secure external call handling
+- ✅ **Comprehensive Documentation**: Architecture, cryptography, and security guides
+- ✅ **React Frontend**: Modern TypeScript component with wallet integration
+
+### Quick Start
+
+See [MULTISIG_README.md](MULTISIG_README.md) for complete documentation.
+
+```bash
+# Run tests
+yarn test:multisig
+
+# Deploy to Base Sepolia
+yarn deploy:multisig:baseSepolia
+```
+
+### Documentation
+
+- **[MULTISIG_README.md](MULTISIG_README.md)**: Complete overview and usage guide
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**: Contract architecture and design
+- **[docs/CRYPTOGRAPHY.md](docs/CRYPTOGRAPHY.md)**: Cryptographic mechanisms explained
+- **[docs/WALLET_COMPARISON.md](docs/WALLET_COMPARISON.md)**: Comparison with other wallet solutions
+- **[docs/SECURITY_CHECKLIST.md](docs/SECURITY_CHECKLIST.md)**: Security audit checklist
+- **[docs/TESTING_GUIDE.md](docs/TESTING_GUIDE.md)**: Comprehensive testing instructions
+- **[docs/DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md)**: Step-by-step deployment guide
+
+### Contract Address
+
+After deployment, you can interact with the MultiSigWallet at:
+- **Base Sepolia**: TBD (deploy using deployment guide)
+- **Base Mainnet**: TBD (after audit and testnet validation)
+
 ## Contributing
 
 We welcome contributions to Base! For guidelines on how to contribute please refer to [CONTRIBUTING.md](CONTRIBUTING.md).
