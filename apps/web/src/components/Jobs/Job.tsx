@@ -31,10 +31,7 @@ export function Job({ job }: JobProps) {
   const { id, title } = job;
 
   const href = useMemo(
-    () => ({
-      pathname: 'https://boards.greenhouse.io/embed/job_app',
-      query: { token: id, for: 'basejobs' },
-    }),
+    () => `https://boards.greenhouse.io/embed/job_app?token=${id}&for=basejobs`,
     [id],
   );
 

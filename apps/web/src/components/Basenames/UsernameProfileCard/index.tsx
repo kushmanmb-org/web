@@ -61,7 +61,8 @@ export default function UsernameProfileCard() {
         <ul className="flex flex-col gap-2">
           {textRecordsSocialFieldsEnabled.map(
             (textRecordKey) =>
-              !!existingTextRecords[textRecordKey] && (
+              !!existingTextRecords[textRecordKey] &&
+              textRecordsSocialFieldsEnabledIcons[textRecordKey] && (
                 <li key={textRecordKey}>
                   <Link
                     href={formatSocialFieldUrl(textRecordKey, existingTextRecords[textRecordKey])}
@@ -70,7 +71,7 @@ export default function UsernameProfileCard() {
                   >
                     <span>
                       <Icon
-                        name={textRecordsSocialFieldsEnabledIcons[textRecordKey]}
+                        name={textRecordsSocialFieldsEnabledIcons[textRecordKey] as string}
                         height="1rem"
                         width="1rem"
                         color="currentColor"

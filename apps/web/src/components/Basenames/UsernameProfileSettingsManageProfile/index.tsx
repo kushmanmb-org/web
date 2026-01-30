@@ -108,7 +108,9 @@ export default function UsernameProfileSettingsManageProfile() {
       </section>
       {/* Settings UI: The save section  */}
       <div className="md:p-center flex items-center justify-between gap-4 border-t border-[#EBEBEB] p-4 md:p-8">
-        {writeTextRecordsError && <TransactionError error={writeTextRecordsError} />}
+        {writeTextRecordsError && (
+          <TransactionError error={writeTextRecordsError} />
+        )}
         <Button
           variant={ButtonVariants.Black}
           rounded

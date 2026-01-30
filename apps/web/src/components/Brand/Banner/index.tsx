@@ -50,7 +50,7 @@ function validContent(node: React.ReactNode): boolean {
 }
 
 export function Banner({ children }: { children: React.ReactNode }) {
-  if (handleInvalidComponentContent(!validContent(children), 'Banner', children)) {
+  if (handleInvalidComponentContent(!validContent(children), 'Banner')) {
     return null;
   }
 

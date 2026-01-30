@@ -2,7 +2,7 @@ import { pinata } from 'apps/web/src/utils/pinata';
 import { isDevelopment } from 'libs/base-ui/constants';
 import { NextResponse, NextRequest } from 'next/server';
 
-export const ALLOWED_IMAGE_TYPE = [
+const ALLOWED_IMAGE_TYPE = [
   'image/svg+xml',
   'image/png',
   'image/jpeg',
@@ -10,7 +10,7 @@ export const ALLOWED_IMAGE_TYPE = [
   'image/gif',
 ];
 
-export const MAX_IMAGE_SIZE_IN_MB = 1; // max 1mb
+const MAX_IMAGE_SIZE_IN_MB = 1; // max 1mb
 
 export async function POST(request: NextRequest) {
   try {

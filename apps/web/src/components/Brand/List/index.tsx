@@ -47,7 +47,7 @@ function TextComponent({
   content: AllowedContent;
   hierarchy: 'lg' | 'md' | 'sm';
 }) {
-  if (handleInvalidComponentContent(!isAllowedContent(content), 'List', content)) {
+  if (handleInvalidComponentContent(!isAllowedContent(content), 'List')) {
     return null;
   }
   switch (hierarchy) {

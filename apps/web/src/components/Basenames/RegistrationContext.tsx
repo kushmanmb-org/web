@@ -102,7 +102,7 @@ export const RegistrationContext = createContext<RegistrationContextProps>({
   loadingDiscounts: true,
   discount: undefined,
   allActiveDiscounts: new Set(),
-  registerName: function () {
+  registerName: async function () {
     return undefined;
   },
 });

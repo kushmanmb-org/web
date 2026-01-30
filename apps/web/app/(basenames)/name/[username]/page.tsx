@@ -24,7 +24,7 @@ export async function generateMetadata(props: UsernameProfileProps): Promise<Met
   return {
     metadataBase: new URL('https://base.org'),
     title: `Basenames | ${username}`,
-    description: description ?? defaultDescription,
+    description: (typeof description === 'string' ? description : undefined) ?? defaultDescription,
     openGraph: {
       title: `Basenames | ${username}`,
       url: `/name/${params.username}`,

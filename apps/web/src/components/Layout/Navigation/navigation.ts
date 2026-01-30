@@ -454,6 +454,7 @@ export const DEFAULT_ROUTES: DefaultRoute[] = [
         newTab: true,
       },
       {
+        label: '',
         isDivider: true,
       },
       {

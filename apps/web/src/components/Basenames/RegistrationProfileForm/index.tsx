@@ -182,7 +182,9 @@ export default function RegistrationProfileForm() {
       >
         {currentFormStep === FormSteps.Keywords ? "I'm done" : 'Next'}
       </Button>
-      {writeTextRecordsError && <TransactionError error={writeTextRecordsError} />}
+      {writeTextRecordsError && (
+        <TransactionError error={writeTextRecordsError} />
+      )}
     </form>
   );
 }
