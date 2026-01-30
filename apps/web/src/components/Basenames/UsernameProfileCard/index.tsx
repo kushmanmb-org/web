@@ -59,34 +59,34 @@ export default function UsernameProfileCard() {
       )}
       {hasTextRecordsSocials && (
         <ul className="flex flex-col gap-2">
-          {textRecordsSocialFieldsEnabled.map(
-            (textRecordKey) =>
-              !!existingTextRecords[textRecordKey] &&
-              textRecordsSocialFieldsEnabledIcons[textRecordKey] && (
-                <li key={textRecordKey}>
-                  <Link
-                    href={formatSocialFieldUrl(textRecordKey, existingTextRecords[textRecordKey])}
-                    target="_blank"
-                    className="flex items-center gap-2 text-palette-foregroundMuted hover:text-blue-500"
-                  >
-                    <span>
-                      <Icon
-                        name={textRecordsSocialFieldsEnabledIcons[textRecordKey] as string}
-                        height="1rem"
-                        width="1rem"
-                        color="currentColor"
-                      />
-                    </span>
-                    <span className="overflow-hidden text-ellipsis">
-                      {formatSocialFieldForDisplay(
-                        textRecordKey,
-                        existingTextRecords[textRecordKey],
-                      )}
-                    </span>
-                  </Link>
-                </li>
-              ),
-          )}
+          {textRecordsSocialFieldsEnabled.map((textRecordKey) => {
+            const iconName = textRecordsSocialFieldsEnabledIcons[textRecordKey];
+            const textRecordValue = existingTextRecords[textRecordKey];
+            
+            if (!textRecordValue || !iconName) return null;
+            
+            return (
+              <li key={textRecordKey}>
+                <Link
+                  href={formatSocialFieldUrl(textRecordKey, textRecordValue)}
+                  target="_blank"
+                  className="flex items-center gap-2 text-palette-foregroundMuted hover:text-blue-500"
+                >
+                  <span>
+                    <Icon
+                      name={iconName}
+                      height="1rem"
+                      width="1rem"
+                      color="currentColor"
+                    />
+                  </span>
+                  <span className="overflow-hidden text-ellipsis">
+                    {formatSocialFieldForDisplay(textRecordKey, textRecordValue)}
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

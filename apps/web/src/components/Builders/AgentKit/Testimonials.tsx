@@ -14,7 +14,7 @@ export function Testmonials() {
             return (
               <TweetCard
                 key={tweet.username}
-                image={typeof tweet.image === 'string' ? undefined : tweet.image}
+                image={typeof tweet.image !== 'string' ? tweet.image : undefined}
                 name={tweet.name}
                 username={tweet.username}
                 content={tweet.content}
