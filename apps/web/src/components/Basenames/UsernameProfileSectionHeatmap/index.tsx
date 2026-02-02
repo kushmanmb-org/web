@@ -12,6 +12,7 @@ import { Address } from 'viem';
 import './cal.css';
 import Tooltip from 'apps/web/src/components/Tooltip';
 import UsernameProfileSectionTitle from 'apps/web/src/components/Basenames/UsernameProfileSectionTitle';
+import { logger } from 'apps/web/src/utils/logger';
 
 // Routers
 const UNISWAP_ROUTER = '0x3fc91a3afd70395cd496c647d5a6cc9d4b2b7fad'; // Uniswap router - base
@@ -267,12 +268,24 @@ export default function UsernameProfileSectionHeatmap() {
           baseInternalTransactions,
           sepoliaTransactions,
         ] = await Promise.all([
-          fetchTransactions(`/api/proxy?apiType=etherscan&address=${addrs}`).catch(() => []),
-          fetchTransactions(`/api/proxy?apiType=basescan&address=${addrs}`).catch(() => []),
+          fetchTransactions(`/api/proxy?apiType=etherscan&address=${addrs}`).catch((error) => {
+            logger.error('Failed to fetch Ethereum transactions', error);
+            return [];
+          }),
+          fetchTransactions(`/api/proxy?apiType=basescan&address=${addrs}`).catch((error) => {
+            logger.error('Failed to fetch Base transactions', error);
+            return [];
+          }),
           fetchTransactions(`/api/proxy?apiType=basescan-internal&address=${addrs}`).catch(
-            () => [],
+            (error) => {
+              logger.error('Failed to fetch Base internal transactions', error);
+              return [];
+            },
           ),
-          fetchTransactions(`/api/proxy?apiType=base-sepolia&address=${addrs}`).catch(() => []),
+          fetchTransactions(`/api/proxy?apiType=base-sepolia&address=${addrs}`).catch((error) => {
+            logger.error('Failed to fetch Sepolia transactions', error);
+            return [];
+          }),
         ]);
 
         const filteredEthereumTransactions = filterTransactions(ethereumTransactions, [addrs]);
@@ -365,7 +378,7 @@ export default function UsernameProfileSectionHeatmap() {
         setEthereumDeployments(allEthereumDeployments);
         setBaseDeployments(allBaseDeployments);
       } catch (e) {
-        console.error('Error fetching data:', e);
+        logger.error('Error fetching data:', e);
       } finally {
         setIsLoading(false);
         setIsDataFetched(true);
