@@ -406,7 +406,7 @@ export default function UsernameProfileSectionHeatmap() {
         setIsDataFetched(true);
       }
     },
-    [fetchTransactions],
+    [fetchTransactions, generateHeatmapData, calculateStreaksAndMetrics],
   );
 
   useEffect(() => {
