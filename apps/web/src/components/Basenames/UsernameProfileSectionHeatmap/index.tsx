@@ -49,10 +49,16 @@ export default function UsernameProfileSectionHeatmap() {
   // The ref/effect here are a kinda jank approach to reaching into the heatmap library's rendered dom and modifying individual rect attributes.
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    const containerElement = containerRef.current;
+    if (!containerElement) return;
+
+    let attempts = 0;
+    const maxAttempts = 50; // Limit polling attempts to prevent infinite loops
+
     const pollForRects = () => {
-      const containerElement = containerRef.current;
-      if (!containerElement) return;
       const rects = containerElement.querySelectorAll('rect');
+      attempts++;
+      
       if (rects.length > 0) {
         rects.forEach((rect) => {
           rect.setAttribute('rx', '2');
@@ -62,9 +68,15 @@ export default function UsernameProfileSectionHeatmap() {
 
         // this line ensures that if the element is scrollable it will be all the way right (showing newest cal data)
         containerElement.scrollLeft = containerElement.scrollWidth;
+      } else if (attempts >= maxAttempts) {
+        // Stop polling after max attempts to prevent indefinite polling
+        clearInterval(timerId);
       }
     };
-    const timerId = setInterval(pollForRects, 100);
+    
+    // Reduced polling frequency from 100ms to 200ms (reduced from 10x per second to 5x per second)
+    const timerId = setInterval(pollForRects, 200);
+    
     return () => {
       clearInterval(timerId);
     };
@@ -102,7 +114,7 @@ export default function UsernameProfileSectionHeatmap() {
 
   const { profileAddress } = useUsernameProfile();
 
-  const generateHeatmapData = (transactions: Transaction[]): HeatmapValue[] => {
+  const generateHeatmapData = useCallback((transactions: Transaction[]): HeatmapValue[] => {
     const dateMap: Record<string, HeatmapValue> = {};
     transactions.forEach((tx) => {
       const txDate = new Date(parseInt(tx.timeStamp) * 1000).toLocaleDateString();
@@ -111,57 +123,60 @@ export default function UsernameProfileSectionHeatmap() {
         : { date: txDate, count: 1 };
     });
     return Object.values(dateMap);
-  };
+  }, []);
 
-  const calculateStreaksAndMetrics = (transactions: Transaction[], addrs: Address) => {
-    const filteredTransactions = transactions.filter(
-      (tx) => tx.from.toLowerCase() === addrs.toLowerCase(),
-    );
-    if (filteredTransactions.length === 0)
-      return { uniqueActiveDays: 0, longestStreakDays: 0, currentStreakDays: 0, activityPeriod: 0 };
+  const calculateStreaksAndMetrics = useCallback(
+    (transactions: Transaction[], addrs: Address) => {
+      const filteredTransactions = transactions.filter(
+        (tx) => tx.from.toLowerCase() === addrs.toLowerCase(),
+      );
+      if (filteredTransactions.length === 0)
+        return { uniqueActiveDays: 0, longestStreakDays: 0, currentStreakDays: 0, activityPeriod: 0 };
 
-    const timestamps = filteredTransactions.map((tx) => parseInt(tx.timeStamp, 10));
-    const firstTransactionDate = new Date(Math.min(...timestamps) * 1000);
-    const lastTransactionDate = new Date(Math.max(...timestamps) * 1000);
+      const timestamps = filteredTransactions.map((tx) => parseInt(tx.timeStamp, 10));
+      const firstTransactionDate = new Date(Math.min(...timestamps) * 1000);
+      const lastTransactionDate = new Date(Math.max(...timestamps) * 1000);
 
-    const uniqueActiveDaysSet = new Set(
-      filteredTransactions.map((tx) => new Date(parseInt(tx.timeStamp, 10) * 1000).toDateString()),
-    );
+      const uniqueActiveDaysSet = new Set(
+        filteredTransactions.map((tx) => new Date(parseInt(tx.timeStamp, 10) * 1000).toDateString()),
+      );
 
-    const sortedDates = Array.from(uniqueActiveDaysSet)
-      .map((dateStr) => new Date(dateStr))
-      .sort((a, b) => a.getTime() - b.getTime());
+      const sortedDates = Array.from(uniqueActiveDaysSet)
+        .map((dateStr) => new Date(dateStr))
+        .sort((a, b) => a.getTime() - b.getTime());
 
-    let longestStreakDays = 0;
-    let streak = 0;
-    for (let i = 0; i < sortedDates.length; i++) {
-      if (
-        i === 0 ||
-        (sortedDates[i].getTime() - sortedDates[i - 1].getTime()) / (1000 * 60 * 60 * 24) === 1
-      ) {
-        streak++;
-      } else {
-        longestStreakDays = Math.max(longestStreakDays, streak);
-        streak = 1;
+      let longestStreakDays = 0;
+      let streak = 0;
+      for (let i = 0; i < sortedDates.length; i++) {
+        if (
+          i === 0 ||
+          (sortedDates[i].getTime() - sortedDates[i - 1].getTime()) / (1000 * 60 * 60 * 24) === 1
+        ) {
+          streak++;
+        } else {
+          longestStreakDays = Math.max(longestStreakDays, streak);
+          streak = 1;
+        }
       }
-    }
-    longestStreakDays = Math.max(longestStreakDays, streak);
+      longestStreakDays = Math.max(longestStreakDays, streak);
 
-    return {
-      uniqueActiveDays: uniqueActiveDaysSet.size,
-      longestStreakDays,
-      currentStreakDays:
-        sortedDates[sortedDates.length - 1].toDateString() === new Date().toDateString()
-          ? streak
-          : 0,
-      activityPeriod: Math.max(
-        Math.ceil(
-          (lastTransactionDate.getTime() - firstTransactionDate.getTime()) / (1000 * 60 * 60 * 24),
+      return {
+        uniqueActiveDays: uniqueActiveDaysSet.size,
+        longestStreakDays,
+        currentStreakDays:
+          sortedDates[sortedDates.length - 1].toDateString() === new Date().toDateString()
+            ? streak
+            : 0,
+        activityPeriod: Math.max(
+          Math.ceil(
+            (lastTransactionDate.getTime() - firstTransactionDate.getTime()) / (1000 * 60 * 60 * 24),
+          ),
+          1,
         ),
-        1,
-      ),
-    };
-  };
+      };
+    },
+    [],
+  );
 
   type EtherscanApiResponse = {
     status: '1' | '0';
@@ -292,10 +307,12 @@ export default function UsernameProfileSectionHeatmap() {
         const filteredBaseTransactions = filterTransactions(baseTransactions, [addrs]);
         const filteredSepoliaTransactions = filterTransactions(sepoliaTransactions, [addrs]);
 
-        // Filter and deduplicate internal Base transactions
-        const filteredBaseInternalTransactions = baseInternalTransactions
-          .filter((tx) => tx.from.toLowerCase() === addrs.toLowerCase())
-          .filter((tx) => !baseTransactions.some((baseTx) => baseTx.hash === tx.hash));
+        // Filter and deduplicate internal Base transactions using Set for O(n) lookup instead of O(n²)
+        const baseTransactionHashes = new Set(baseTransactions.map((tx) => tx.hash));
+        const filteredBaseInternalTransactions = baseInternalTransactions.filter(
+          (tx) =>
+            tx.from.toLowerCase() === addrs.toLowerCase() && !baseTransactionHashes.has(tx.hash),
+        );
 
         allTransactions.push(
           ...filteredEthereumTransactions,
@@ -384,7 +401,7 @@ export default function UsernameProfileSectionHeatmap() {
         setIsDataFetched(true);
       }
     },
-    [fetchTransactions],
+    [fetchTransactions, generateHeatmapData, calculateStreaksAndMetrics],
   );
 
   useEffect(() => {
