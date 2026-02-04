@@ -25,6 +25,9 @@ type ProofResponse = {
 
 /**
  * Generic hook for attestations that fetch proof from API and validate on-chain
+ * 
+ * @param processProof - Optional custom proof processor. Should be memoized with useCallback
+ *                       if passed as a prop to avoid unnecessary re-renders.
  */
 export function useAttestationWithProof(
   apiEndpoint: string,
@@ -63,7 +66,9 @@ export function useAttestationWithProof(
         logError(error, errorContext);
       });
     }
-  }, [address, apiEndpoint, basenameChain.id, logError, errorContext]);
+    // errorContext is a static string and doesn't need to be in dependencies
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [address, apiEndpoint, basenameChain.id, logError]);
 
   // Default proof processor: encode merkle proofs or use signature
   const defaultProcessProof = (response: ProofResponse | null): `0x${string}` | undefined => {
