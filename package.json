@@ -95,7 +95,7 @@
     "classnames": "^2.3.2",
     "clsx": "^1.2.1",
     "moment": "^2.29.4",
-    "next": "15.1.9",
+    "next": "15.5.10",
     "tslib": "^2.3.0"
   },
   "lint-staged": {
