@@ -29,6 +29,12 @@ export async function GET(req: NextRequest) {
       case 'basescan-internal':
         apiUrl = `https://api.etherscan.io/v2/api?module=account&action=txlistinternal&address=${address}&chainid=8453&apikey=${ETHERSCAN_API_KEY}`;
         break;
+      case 'etherscan-sourcecode':
+        apiUrl = `https://api.etherscan.io/api?module=contract&action=getsourcecode&address=${address}&apikey=${ETHERSCAN_API_KEY}`;
+        break;
+      case 'basescan-sourcecode':
+        apiUrl = `https://api.basescan.org/api?module=contract&action=getsourcecode&address=${address}&apikey=${ETHERSCAN_API_KEY}`;
+        break;
       default:
         return NextResponse.json({ error: 'Invalid apiType parameter' }, { status: 400 });
     }
