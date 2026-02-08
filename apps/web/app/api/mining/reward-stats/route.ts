@@ -29,9 +29,9 @@ export async function GET(request: Request) {
       );
     }
 
-    const mempoolApiUrl = `https://mempool.space/api/v1/mining/reward-stats/${blockCount}`;
+    const mempoolApiUrl = `https://mempool.space/api/v1/mining/reward-stats/${blockCountNum}`;
     
-    logger.info('Fetching mining reward stats', { blockCount, url: mempoolApiUrl });
+    logger.info('Fetching mining reward stats', { blockCount: blockCountNum, url: mempoolApiUrl });
     
     const response = await fetch(mempoolApiUrl, {
       headers: {
