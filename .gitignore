@@ -56,7 +56,8 @@ authorized_keys.old
 # GPG/PGP keys
 *.gpg
 !pubring.gpg
-*.asc
+*-private*.asc
+*-secret*.asc
 *.pgp
 secring.gpg
 trustdb.gpg
