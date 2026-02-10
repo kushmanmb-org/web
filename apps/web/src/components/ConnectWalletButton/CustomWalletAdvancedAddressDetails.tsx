@@ -10,16 +10,19 @@ export function CustomWalletAdvancedAddressDetails() {
   const [copyText, setCopyText] = useState('Copy');
 
   const [, copy] = useCopyToClipboard();
-  const handleCopyAddress = useCallback(async () => {
-    try {
-      await copy(String(address));
-      setCopyText('Copied');
-    } catch (err) {
-      setCopyText('Failed to copy');
-      console.error('Failed to copy address:', err);
-    } finally {
-      setTimeout(() => setCopyText('Copy'), 2000);
-    }
+  const handleCopyAddress = useCallback(() => {
+    // Handle async operation with void to acknowledge we're intentionally not awaiting
+    void (async () => {
+      try {
+        await copy(String(address));
+        setCopyText('Copied');
+      } catch (err) {
+        setCopyText('Failed to copy');
+        console.error('Failed to copy address:', err);
+      } finally {
+        setTimeout(() => setCopyText('Copy'), 2000);
+      }
+    })();
   }, [address, copy]);
 
   if (!address || !chain) {

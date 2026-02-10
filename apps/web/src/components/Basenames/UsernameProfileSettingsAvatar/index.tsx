@@ -78,25 +78,28 @@ export default function UsernameProfileSettingsAvatar() {
   }, [logError, writeTextRecords]);
 
   const onClickSave = useCallback(
-    async (event: React.MouseEvent<HTMLButtonElement>) => {
+    (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
 
       if (!currentWalletIsProfileEditor) return false;
 
       if (avatarFile) {
-        try {
-          const result = await uploadFile(avatarFile);
-          // set the uploaded result as the url
-          if (result) {
-            logEventWithContext('avatar_upload_success', ActionType.change);
-            setAvatarUploadedAndReadyToSave(true);
+        // Handle async operation with void to acknowledge we're intentionally not awaiting
+        void (async () => {
+          try {
+            const result = await uploadFile(avatarFile);
+            // set the uploaded result as the url
+            if (result) {
+              logEventWithContext('avatar_upload_success', ActionType.change);
+              setAvatarUploadedAndReadyToSave(true);
+            }
+          } catch (error) {
+            logError(error, 'Failed to upload avatar');
+            logEventWithContext('avatar_upload_failed', ActionType.error);
           }
-        } catch (error) {
-          logError(error, 'Failed to upload avatar');
-          logEventWithContext('avatar_upload_failed', ActionType.error);
-        }
+        })();
       } else {
-        await saveAvatar();
+        void saveAvatar();
       }
     },
     [
@@ -111,7 +114,7 @@ export default function UsernameProfileSettingsAvatar() {
 
   useEffect(() => {
     if (avatarUploadAndReadyToSave) {
-      saveAvatar();
+      void saveAvatar();
       setAvatarUploadedAndReadyToSave(false);
     }
   }, [avatarUploadAndReadyToSave, saveAvatar]);

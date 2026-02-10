@@ -75,15 +75,18 @@ export default function UsernameProfileSidebar() {
     eventName: 'basename_reclaim',
   });
 
-  const reclaimProfile = useCallback(async () => {
+  const reclaimProfile = useCallback(() => {
     if (!reclaimContract) return;
 
-    try {
-      const result = await initiateReclaim(reclaimContract);
-      console.log({ result });
-    } catch (error) {
-      logError(error, 'Failed to reclaim profile');
-    }
+    // Handle async operation with void to acknowledge we're intentionally not awaiting
+    void (async () => {
+      try {
+        const result = await initiateReclaim(reclaimContract);
+        console.log({ result });
+      } catch (error) {
+        logError(error, 'Failed to reclaim profile');
+      }
+    })();
   }, [initiateReclaim, logError, reclaimContract]);
 
   useEffect(() => {

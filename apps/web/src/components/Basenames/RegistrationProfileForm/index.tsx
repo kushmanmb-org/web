@@ -62,7 +62,7 @@ export default function RegistrationProfileForm() {
   }, []);
 
   const onClickSave = useCallback(
-    async (event: React.MouseEvent<HTMLButtonElement>) => {
+    (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
       if (currentFormStep === FormSteps.Description) {
         transitionFormOpacity(() => setCurrentFormStep(FormSteps.Socials));
@@ -73,11 +73,14 @@ export default function RegistrationProfileForm() {
       }
 
       if (currentFormStep === FormSteps.Keywords) {
-        try {
-          await writeTextRecords();
-        } catch (error) {
-          logError(error, 'Failed to write text records');
-        }
+        // Handle async operation with void to acknowledge we're intentionally not awaiting
+        void (async () => {
+          try {
+            await writeTextRecords();
+          } catch (error) {
+            logError(error, 'Failed to write text records');
+          }
+        })();
       }
 
       event.preventDefault();
