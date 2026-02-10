@@ -77,21 +77,31 @@ export default function UsernameProfileSidebar() {
 
   const reclaimProfile = useCallback(() => {
     if (!reclaimContract) return;
-    initiateReclaim(reclaimContract)
-      .then((result) => console.log({ result }))
-      .catch((error) => {
+
+    // Handle async operation with void to acknowledge we're intentionally not awaiting
+    void (async () => {
+      try {
+        const result = await initiateReclaim(reclaimContract);
+        console.log({ result });
+      } catch (error) {
         logError(error, 'Failed to reclaim profile');
-      });
+      }
+    })();
   }, [initiateReclaim, logError, reclaimContract]);
 
   useEffect(() => {
-    if (reclaimStatus === WriteTransactionWithReceiptStatus.Success) {
-      profileRefetch()
-        .then()
-        .catch((error) => {
-          logError(error, 'Failed to refetch profile');
-        });
+    // Refetch profile after successful reclaim
+    async function handleRefetch() {
+      if (reclaimStatus !== WriteTransactionWithReceiptStatus.Success) return;
+
+      try {
+        await profileRefetch();
+      } catch (error) {
+        logError(error, 'Failed to refetch profile');
+      }
     }
+
+    void handleRefetch();
   }, [logError, profileRefetch, reclaimStatus]);
 
   const textRecordKeywords = existingTextRecords[UsernameTextRecordKeys.Keywords];

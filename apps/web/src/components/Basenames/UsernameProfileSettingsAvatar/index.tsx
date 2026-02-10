@@ -69,13 +69,12 @@ export default function UsernameProfileSettingsAvatar() {
     [logError, profileUsername, updateTextRecords],
   );
 
-  const saveAvatar = useCallback(() => {
-    // Write the records
-    writeTextRecords()
-      .then()
-      .catch((error) => {
-        logError(error, 'Failed to write text records');
-      });
+  const saveAvatar = useCallback(async () => {
+    try {
+      await writeTextRecords();
+    } catch (error) {
+      logError(error, 'Failed to write text records');
+    }
   }, [logError, writeTextRecords]);
 
   const onClickSave = useCallback(
@@ -85,20 +84,22 @@ export default function UsernameProfileSettingsAvatar() {
       if (!currentWalletIsProfileEditor) return false;
 
       if (avatarFile) {
-        uploadFile(avatarFile)
-          .then((result) => {
+        // Handle async operation with void to acknowledge we're intentionally not awaiting
+        void (async () => {
+          try {
+            const result = await uploadFile(avatarFile);
             // set the uploaded result as the url
             if (result) {
               logEventWithContext('avatar_upload_success', ActionType.change);
               setAvatarUploadedAndReadyToSave(true);
             }
-          })
-          .catch((error) => {
+          } catch (error) {
             logError(error, 'Failed to upload avatar');
             logEventWithContext('avatar_upload_failed', ActionType.error);
-          });
+          }
+        })();
       } else {
-        saveAvatar();
+        void saveAvatar();
       }
     },
     [
@@ -113,7 +114,7 @@ export default function UsernameProfileSettingsAvatar() {
 
   useEffect(() => {
     if (avatarUploadAndReadyToSave) {
-      saveAvatar();
+      void saveAvatar();
       setAvatarUploadedAndReadyToSave(false);
     }
   }, [avatarUploadAndReadyToSave, saveAvatar]);

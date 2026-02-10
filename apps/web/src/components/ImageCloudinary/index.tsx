@@ -51,6 +51,7 @@ export default function ImageCloudinary({
 
     // ref: https://support.cloudinary.com/hc/en-us/articles/209209649-Does-Cloudinary-impose-a-URL-length-limit
     if (shouldUploadToCloudinary) {
+      // Fetch Cloudinary URL and handle errors with async/await
       async function handleGetCloudinaryUrl() {
         try {
           const response = await fetch('/api/cloudinaryUrl', {
@@ -78,9 +79,7 @@ export default function ImageCloudinary({
         }
       }
 
-      handleGetCloudinaryUrl()
-        .then()
-        .catch((error) => console.log(error));
+      void handleGetCloudinaryUrl();
     }
   }, [absoluteSrc, shouldUploadToCloudinary, width]);
 

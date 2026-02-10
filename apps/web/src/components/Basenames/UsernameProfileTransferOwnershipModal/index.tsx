@@ -86,14 +86,16 @@ export default function UsernameProfileTransferOwnershipModal({
       return;
     }
 
-    profileRefetch()
-      .then(() => {
+    // Handle async operation with void to acknowledge we're intentionally not awaiting
+    void (async () => {
+      try {
+        await profileRefetch();
         setShowProfileSettings(false);
         onClose();
-      })
-      .catch((error) => {
+      } catch (error) {
         logError(error, 'Failed to refetch Owner');
-      });
+      }
+    })();
   }, [currentOwnershipStep, logError, onClose, profileRefetch, setShowProfileSettings]);
 
   // Memos

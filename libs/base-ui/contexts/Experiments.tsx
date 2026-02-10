@@ -61,13 +61,17 @@ export default function ExperimentsProvider({ children }: ExperimentsProviderPro
   }, [experimentClient]);
 
   useEffect(() => {
-    startExperiment()
-      .then(() => {
+    // Start the experiment client and handle errors with async/await
+    async function initializeExperiment() {
+      try {
+        await startExperiment();
         setIsReady(true);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.log(`Error starting experiments for ${ampDeploymentKey}:`, error);
-      });
+      }
+    }
+
+    void initializeExperiment();
   }, [experimentClient, startExperiment]);
 
   const getUserVariant = useCallback(
