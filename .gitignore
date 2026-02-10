@@ -32,7 +32,7 @@ privkey.*
 priv-key.*
 service-account*.json
 gcp-key*.json
-gcloud/
+**/gcloud/
 *.keystore
 *.jks
 keystore.json
