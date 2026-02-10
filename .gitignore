@@ -55,10 +55,10 @@ authorized_keys.old
 
 # GPG/PGP keys
 *.gpg
+!pubring.gpg
 *.asc
 *.pgp
 secring.gpg
-pubring.gpg
 trustdb.gpg
 private-keys-*.gpg
 **/gnupg/private-keys-*/
@@ -96,14 +96,17 @@ truffle-config.local.js
 foundry.toml.local
 account-keys*.json
 private-account*.json
-**/accounts/*.json
-eth-*.key
-eth-*.json
-private-*.json
-*_private.json
+**/accounts/*-private*.json
+**/accounts/*-key*.json
+eth-private*.key
+eth-private*.json
+private-key*.json
+*_private_key.json
 *_privkey.json
-deployer-*.json
-signer-*.json
+deployer-keys*.json
+deployer-wallet*.json
+signer-keys*.json
+signer-wallet*.json
 
 # Credentials and secrets
 credentials.json
