@@ -1,0 +1,1284 @@
+openapi: 3.0.3
+info:
+  title: Base.org Web API
+  description: |
+    API for the Base.org ecosystem platform, including Basenames (domain name system), 
+    proof verification, registry management, and mining statistics.
+    
+    Base is a secure, low-cost, developer-friendly Ethereum Layer 2 built on Optimism's OP Stack.
+  version: 1.0.0
+  contact:
+    name: Base API Support
+    url: https://base.org
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: https://base.org
+    description: Production server
+  - url: http://localhost:3000
+    description: Local development server
+
+tags:
+  - name: Mining
+    description: Bitcoin mining reward statistics
+  - name: Block
+    description: Blockchain block and transaction data
+  - name: Health
+    description: Service health checks
+  - name: Registry
+    description: Content registry management
+  - name: Auth
+    description: Authentication endpoints
+  - name: NFT
+    description: NFT proof verification
+  - name: Basenames
+    description: Base naming system (ENS-like domains)
+  - name: Proofs
+    description: Verification and discount proofs for Basenames
+  - name: Proxy
+    description: Proxy endpoints
+  - name: Farcaster
+    description: Farcaster integration
+  - name: Media
+    description: Media and image processing
+
+paths:
+  /api/mining/reward-stats:
+    get:
+      tags:
+        - Mining
+      summary: Get Bitcoin mining reward statistics
+      description: Fetches mining reward statistics from mempool.space API for a specified number of blocks
+      operationId: getMiningRewardStats
+      parameters:
+        - name: blockCount
+          in: query
+          description: Number of blocks to fetch statistics for
+          required: false
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+      responses:
+        '200':
+          description: Mining reward statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MiningRewardStats'
+        '400':
+          description: Invalid blockCount parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/block/{blockHash}/txs:
+    get:
+      tags:
+        - Block
+      summary: Get transactions for a specific block
+      description: Retrieves all transactions for a given block hash
+      operationId: getBlockTransactions
+      parameters:
+        - name: blockHash
+          in: path
+          required: true
+          description: Block hash to retrieve transactions for
+          schema:
+            type: string
+            pattern: '^0x[a-fA-F0-9]{64}$'
+      responses:
+        '200':
+          description: Block transactions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Transaction'
+        '400':
+          description: Invalid block hash
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Block not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/_health:
+    get:
+      tags:
+        - Health
+      summary: Health check endpoint
+      description: Returns service health status
+      operationId: getHealth
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /api/cloudinaryUrl:
+    post:
+      tags:
+        - Media
+      summary: Get Cloudinary upload URL
+      description: Generates a signed URL for uploading media to Cloudinary
+      operationId: getCloudinaryUrl
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                folder:
+                  type: string
+                  description: Target folder in Cloudinary
+      responses:
+        '200':
+          description: Cloudinary URL generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    format: uri
+                  signature:
+                    type: string
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/registry/entries:
+    get:
+      tags:
+        - Registry
+      summary: Get registry entries
+      description: Retrieves paginated content registry entries with optional filtering
+      operationId: getRegistryEntries
+      parameters:
+        - name: category
+          in: query
+          description: Filter by category (case-insensitive partial match)
+          required: false
+          schema:
+            type: string
+        - name: curation
+          in: query
+          description: Filter by curation status (case-insensitive partial match)
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: Registry entries retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RegistryEntry'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/registry/featured:
+    get:
+      tags:
+        - Registry
+      summary: Get featured registry entries
+      description: Retrieves featured content from the registry
+      operationId: getFeaturedEntries
+      responses:
+        '200':
+          description: Featured entries retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RegistryEntry'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/auth:
+    get:
+      tags:
+        - Auth
+      summary: Authentication challenge
+      description: Returns 401 with WWW-Authenticate header for basic auth
+      operationId: getAuthChallenge
+      responses:
+        '401':
+          description: Authentication required
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+                example: Basic realm="Secure Area"
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Auth Required.
+
+  /api/auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Register new user
+      description: Registers a new user account
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+              required:
+                - username
+                - email
+                - password
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  userId:
+                    type: string
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/checkNftProof:
+    post:
+      tags:
+        - NFT
+      summary: Verify NFT proof
+      description: Validates NFT ownership proof for an address
+      operationId: checkNftProof
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: string
+                  pattern: '^0x[a-fA-F0-9]{40}$'
+                  description: Ethereum address
+                tokenId:
+                  type: string
+                  description: NFT token ID
+                contractAddress:
+                  type: string
+                  pattern: '^0x[a-fA-F0-9]{40}$'
+                  description: NFT contract address
+              required:
+                - address
+                - tokenId
+                - contractAddress
+      responses:
+        '200':
+          description: NFT proof verified
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid:
+                    type: boolean
+                  owner:
+                    type: string
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/basenames/getUsernames:
+    get:
+      tags:
+        - Basenames
+      summary: Get usernames for address
+      description: Retrieves all Basenames (usernames) associated with an Ethereum address
+      operationId: getUsernames
+      parameters:
+        - name: address
+          in: query
+          required: true
+          description: Ethereum address to query
+          schema:
+            type: string
+            pattern: '^0x[a-fA-F0-9]{40}$'
+        - name: network
+          in: query
+          required: false
+          description: Network to query (base-mainnet or base-sepolia)
+          schema:
+            type: string
+            enum:
+              - base-mainnet
+              - base-sepolia
+            default: base-mainnet
+        - name: page
+          in: query
+          required: false
+          description: Page token for pagination
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Usernames retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManagedAddressesResponse'
+        '400':
+          description: Invalid address or network
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/basenames/{name}/assets/cardImage.svg:
+    get:
+      tags:
+        - Basenames
+      summary: Get Basename card image
+      description: Generates an SVG card image for a Basename
+      operationId: getBasenameCardImage
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Basename to generate card for
+          schema:
+            type: string
+      responses:
+        '200':
+          description: SVG card image generated successfully
+          content:
+            image/svg+xml:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Basename not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/basenames/avatar/ipfsUpload:
+    post:
+      tags:
+        - Basenames
+      summary: Upload avatar to IPFS
+      description: Uploads a user avatar image to IPFS for Basename profile
+      operationId: uploadBasenameAvatar
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Image file to upload
+      responses:
+        '200':
+          description: Avatar uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ipfsHash:
+                    type: string
+                  url:
+                    type: string
+                    format: uri
+        '400':
+          description: Invalid file or request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/basenames/talentprotocol/{address}:
+    get:
+      tags:
+        - Basenames
+      summary: Get Talent Protocol data
+      description: Retrieves Talent Protocol information for an address
+      operationId: getTalentProtocolData
+      parameters:
+        - name: address
+          in: path
+          required: true
+          description: Ethereum address
+          schema:
+            type: string
+            pattern: '^0x[a-fA-F0-9]{40}$'
+      responses:
+        '200':
+          description: Talent Protocol data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  talent_score:
+                    type: number
+                  verified:
+                    type: boolean
+        '400':
+          description: Invalid address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Address not found in Talent Protocol
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/basenames/metadata/{tokenId}:
+    get:
+      tags:
+        - Basenames
+      summary: Get Basename NFT metadata
+      description: Retrieves ERC721 metadata for a Basename token
+      operationId: getBasenameMetadata
+      parameters:
+        - name: tokenId
+          in: path
+          required: true
+          description: Token ID of the Basename NFT
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Metadata retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NFTMetadata'
+        '404':
+          description: Token not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/basenames/contract-uri:
+    get:
+      tags:
+        - Basenames
+      summary: Get Basenames contract URI
+      description: Returns the contract-level metadata URI for the Basenames collection
+      operationId: getBasenamesContractUri
+      responses:
+        '200':
+          description: Contract URI retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    format: uri
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/basenames/contract-uri.json:
+    get:
+      tags:
+        - Basenames
+      summary: Get Basenames contract metadata
+      description: Returns the contract-level metadata JSON for the Basenames collection
+      operationId: getBasenamesContractMetadata
+      responses:
+        '200':
+          description: Contract metadata retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  image:
+                    type: string
+                    format: uri
+                  external_link:
+                    type: string
+                    format: uri
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/proofs/discountCode:
+    post:
+      tags:
+        - Proofs
+      summary: Verify discount code
+      description: Validates a discount code for Basename registration
+      operationId: verifyDiscountCode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  description: Discount code to verify
+                address:
+                  type: string
+                  pattern: '^0x[a-fA-F0-9]{40}$'
+                  description: Ethereum address
+              required:
+                - code
+                - address
+      responses:
+        '200':
+          description: Discount code verified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscountProofResponse'
+        '400':
+          description: Invalid code or address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Discount code not found or expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/proofs/discountCode/consume:
+    post:
+      tags:
+        - Proofs
+      summary: Consume discount code
+      description: Marks a discount code as used/consumed
+      operationId: consumeDiscountCode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  description: Discount code to consume
+                address:
+                  type: string
+                  pattern: '^0x[a-fA-F0-9]{40}$'
+                  description: Ethereum address
+              required:
+                - code
+                - address
+      responses:
+        '200':
+          description: Discount code consumed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+        '400':
+          description: Invalid request or code already consumed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/proofs/bns:
+    get:
+      tags:
+        - Proofs
+      summary: Get BNS proof
+      description: Retrieves proof for BNS (Base Name Service) discount eligibility
+      operationId: getBnsProof
+      parameters:
+        - name: address
+          in: query
+          required: true
+          description: Ethereum address to check
+          schema:
+            type: string
+            pattern: '^0x[a-fA-F0-9]{40}$'
+      responses:
+        '200':
+          description: BNS proof retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProofResponse'
+        '400':
+          description: Invalid address or no eligibility
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: User already claimed a username
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/proofs/baseEthHolders:
+    get:
+      tags:
+        - Proofs
+      summary: Get Base ETH holder proof
+      description: Retrieves proof for Base ETH holder discount eligibility
+      operationId: getBaseEthHoldersProof
+      parameters:
+        - name: address
+          in: query
+          required: true
+          description: Ethereum address to check
+          schema:
+            type: string
+            pattern: '^0x[a-fA-F0-9]{40}$'
+      responses:
+        '200':
+          description: Base ETH holder proof retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProofResponse'
+        '400':
+          description: Invalid address or not eligible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: User already claimed a username
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/proofs/cb1:
+    get:
+      tags:
+        - Proofs
+      summary: Get CB1 proof
+      description: Retrieves proof for CB1 (Coinbase One) discount eligibility
+      operationId: getCb1Proof
+      parameters:
+        - name: address
+          in: query
+          required: true
+          description: Ethereum address to check
+          schema:
+            type: string
+            pattern: '^0x[a-fA-F0-9]{40}$'
+      responses:
+        '200':
+          description: CB1 proof retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoinbaseProofResponse'
+        '400':
+          description: Invalid address or not eligible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: User already claimed a username
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/proofs/coinbase:
+    get:
+      tags:
+        - Proofs
+      summary: Get Coinbase verified account proof
+      description: Retrieves proof for Coinbase verified account discount eligibility
+      operationId: getCoinbaseProof
+      parameters:
+        - name: address
+          in: query
+          required: true
+          description: Ethereum address to check
+          schema:
+            type: string
+            pattern: '^0x[a-fA-F0-9]{40}$'
+      responses:
+        '200':
+          description: Coinbase proof retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoinbaseProofResponse'
+        '400':
+          description: Invalid address or not verified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: User already claimed a username
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/proofs/cbid:
+    get:
+      tags:
+        - Proofs
+      summary: Get CBID proof
+      description: Retrieves proof for CBID (Coinbase ID) discount eligibility
+      operationId: getCbidProof
+      parameters:
+        - name: address
+          in: query
+          required: true
+          description: Ethereum address to check
+          schema:
+            type: string
+            pattern: '^0x[a-fA-F0-9]{40}$'
+      responses:
+        '200':
+          description: CBID proof retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProofResponse'
+        '400':
+          description: Invalid address or not eligible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: User already claimed a username
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/proxy:
+    get:
+      tags:
+        - Proxy
+      summary: Proxy GET request
+      description: Proxies GET requests to external services
+      operationId: proxyGet
+      parameters:
+        - name: url
+          in: query
+          required: true
+          description: URL to proxy to
+          schema:
+            type: string
+            format: uri
+      responses:
+        '200':
+          description: Proxied response
+        '400':
+          description: Invalid URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Proxy error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - Proxy
+      summary: Proxy POST request
+      description: Proxies POST requests to external services
+      operationId: proxyPost
+      parameters:
+        - name: url
+          in: query
+          required: true
+          description: URL to proxy to
+          schema:
+            type: string
+            format: uri
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Proxied response
+        '400':
+          description: Invalid URL or request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Proxy error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /farcaster/user:
+    get:
+      tags:
+        - Farcaster
+      summary: Get Farcaster user
+      description: Retrieves Farcaster user information
+      operationId: getFarcasterUser
+      parameters:
+        - name: fid
+          in: query
+          description: Farcaster ID
+          schema:
+            type: string
+        - name: username
+          in: query
+          description: Farcaster username
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  fid:
+                    type: string
+                  username:
+                    type: string
+                  displayName:
+                    type: string
+                  pfp:
+                    type: string
+                    format: uri
+                  bio:
+                    type: string
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    MiningRewardStats:
+      type: object
+      properties:
+        startBlock:
+          type: integer
+          description: Starting block number
+        endBlock:
+          type: integer
+          description: Ending block number
+        totalReward:
+          type: number
+          description: Total mining rewards
+        totalFee:
+          type: number
+          description: Total transaction fees
+        totalTx:
+          type: integer
+          description: Total number of transactions
+
+    Transaction:
+      type: object
+      properties:
+        hash:
+          type: string
+          pattern: '^0x[a-fA-F0-9]{64}$'
+        from:
+          type: string
+          pattern: '^0x[a-fA-F0-9]{40}$'
+        to:
+          type: string
+          pattern: '^0x[a-fA-F0-9]{40}$'
+        value:
+          type: string
+        gas:
+          type: string
+        gasPrice:
+          type: string
+        nonce:
+          type: integer
+        blockHash:
+          type: string
+          pattern: '^0x[a-fA-F0-9]{64}$'
+        blockNumber:
+          type: integer
+        transactionIndex:
+          type: integer
+
+    RegistryEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        category:
+          type: string
+        content:
+          type: object
+        updated_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+
+    Pagination:
+      type: object
+      properties:
+        total_records:
+          type: integer
+        current_page:
+          type: integer
+        total_pages:
+          type: integer
+        limit:
+          type: integer
+
+    ManagedAddressesResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              basename:
+                type: string
+              address:
+                type: string
+                pattern: '^0x[a-fA-F0-9]{40}$'
+        pagination:
+          type: object
+          properties:
+            next_page:
+              type: string
+            has_more:
+              type: boolean
+
+    NFTMetadata:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        image:
+          type: string
+          format: uri
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              trait_type:
+                type: string
+              value:
+                type: string
+
+    ProofResponse:
+      type: object
+      properties:
+        signedMessage:
+          type: string
+          description: Signed message for contract verification
+        discountValidatorAddress:
+          type: string
+          pattern: '^0x[a-fA-F0-9]{40}$'
+        expires:
+          type: string
+          format: date-time
+
+    CoinbaseProofResponse:
+      type: object
+      properties:
+        signedMessage:
+          type: string
+          description: Signed message for contract verification
+        attestations:
+          type: array
+          items:
+            $ref: '#/components/schemas/VerifiedAccount'
+        discountValidatorAddress:
+          type: string
+          pattern: '^0x[a-fA-F0-9]{40}$'
+        expires:
+          type: string
+          format: date-time
+
+    VerifiedAccount:
+      type: object
+      properties:
+        verifiedAccount:
+          type: boolean
+        accountId:
+          type: string
+
+    DiscountProofResponse:
+      type: object
+      properties:
+        valid:
+          type: boolean
+        discount:
+          type: number
+        code:
+          type: string
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+        details:
+          type: string
+          description: Additional error details
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for authenticated requests
+    
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: Basic HTTP authentication
+
+security:
+  - BearerAuth: []
+  - BasicAuth: []

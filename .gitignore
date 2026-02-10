@@ -144,3 +144,13 @@ Thumbs.db
 # Test coverage
 **/coverage/
 .nyc_output/
+
+# OpenAPI/API Documentation - Private versions with sensitive data
+openapi.private.yaml
+openapi.private.json
+openapi-private.*
+**/openapi.private.*
+api-docs-private.*
+**/api-docs-private.*
+swagger-private.*
+**/swagger-private.*
