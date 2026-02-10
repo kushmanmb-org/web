@@ -20,14 +20,9 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js 24.x
-        uses: actions/setup-node@v4
+      - name: Setup Node.js with Yarn
+        uses: ./.github/actions/setup-node-yarn
         with:
           node-version: 24.x
-          cache: 'yarn'
-      - name: Enable Corepack
-        run: corepack enable
       - name: Run Tests
-        run: |
-          yarn install 
-          yarn test
+        run: yarn test

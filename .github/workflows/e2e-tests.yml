@@ -24,14 +24,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - name: Setup Node.js with Yarn
+        uses: ./.github/actions/setup-node-yarn
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
-
-      - name: Enable Corepack
-        run: corepack enable
 
       - name: Set E2E env variables
         working-directory: apps/web
@@ -44,9 +40,6 @@ jobs:
           echo "TEST_BASENAME=testbasename123" >> .env
           echo "NEXT_PUBLIC_CDP_BASE_RPC_ENDPOINT=http://localhost:8545/" >> .env
           echo "NEXT_PUBLIC_E2E_TEST=true" >> .env
-
-      - name: Install dependencies
-        run: yarn
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1.4.0
