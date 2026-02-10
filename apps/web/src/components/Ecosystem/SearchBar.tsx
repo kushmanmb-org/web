@@ -52,16 +52,29 @@ export function SearchBar({
   setSearch: Dispatch<SetStateAction<string>>;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [localSearch, setLocalSearch] = useState(search);
   const debounced = useRef<number>();
   const inputRef = useRef<HTMLInputElement>(null);
   const mobileInputRef = useRef<HTMLInputElement>(null);
+
+  // Sync local search with prop when cleared externally
+  useEffect(() => {
+    if (search === '') {
+      setLocalSearch('');
+    }
+  }, [search]);
 
   const onChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       clearTimeout(debounced.current);
 
       const value = e.target.value;
-      setSearch(value);
+      setLocalSearch(value); // Update local state immediately for responsive input
+      
+      // Debounce the parent state update with 300ms delay
+      debounced.current = window.setTimeout(() => {
+        setSearch(value);
+      }, 300);
     },
     [setSearch],
   );
@@ -71,6 +84,7 @@ export function SearchBar({
   }, []);
 
   const clearInput = useCallback(() => {
+    setLocalSearch('');
     setSearch('');
     setIsExpanded(false);
   }, [setSearch]);
@@ -106,7 +120,7 @@ export function SearchBar({
         ref={inputRef}
         type="text"
         id="appsSearchBar"
-        value={search}
+        value={localSearch}
         onChange={onChange}
         className="hidden max-w-[100px] flex-1 font-sans text-base text-black placeholder:text-base-gray-200 focus:outline-none md:block md:max-w-none"
         placeholder="Search"
@@ -118,7 +132,7 @@ export function SearchBar({
           <motion.input
             ref={mobileInputRef}
             type="text"
-            value={search}
+            value={localSearch}
             onChange={onChange}
             onBlur={onBlur}
             className="max-w-[100px] flex-1 font-sans text-base text-black placeholder:text-base-gray-200 focus:outline-none md:hidden md:max-w-none"
@@ -134,7 +148,7 @@ export function SearchBar({
       </AnimatePresence>
 
       <AnimatePresence>
-        {search && (
+        {localSearch && (
           <motion.button
             type="button"
             onClick={clearInput}

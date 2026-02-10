@@ -137,12 +137,17 @@ export default function UsernameProfileSectionHeatmap() {
       const firstTransactionDate = new Date(Math.min(...timestamps) * 1000);
       const lastTransactionDate = new Date(Math.max(...timestamps) * 1000);
 
-      const uniqueActiveDaysSet = new Set(
-        filteredTransactions.map((tx) => new Date(parseInt(tx.timeStamp, 10) * 1000).toDateString()),
-      );
+      // Optimize: create Date objects only once during Set construction
+      const uniqueActiveDaysSet = new Set<number>();
+      filteredTransactions.forEach((tx) => {
+        const timestamp = parseInt(tx.timeStamp, 10) * 1000;
+        const dateStart = new Date(timestamp);
+        dateStart.setHours(0, 0, 0, 0);
+        uniqueActiveDaysSet.add(dateStart.getTime());
+      });
 
       const sortedDates = Array.from(uniqueActiveDaysSet)
-        .map((dateStr) => new Date(dateStr))
+        .map((timestamp) => new Date(timestamp))
         .sort((a, b) => a.getTime() - b.getTime());
 
       let longestStreakDays = 0;
@@ -358,36 +363,51 @@ export default function UsernameProfileSectionHeatmap() {
         setCurrentStreak(currentStreakDays);
         setActivityPeriod(activity);
 
-        setTokenSwapCount(
-          allTransactions.filter(
-            (tx) =>
+        // Optimize: single pass through transactions instead of multiple filters
+        const ensAddresses = [
+          ETH_REGISTRAR_CONTROLLER_1,
+          ETH_REGISTRAR_CONTROLLER_2,
+          BASENAMES_REGISTRAR_CONTROLLER,
+          BASENAMES_EA_REGISTRAR_CONTROLLER,
+        ];
+        
+        const counts = allTransactions.reduce(
+          (acc, tx) => {
+            // Token swap count
+            if (
               ((tx.functionName &&
                 SWAP_FUNCTION_NAMES.some((fn) => tx.functionName?.includes(fn))) ??
                 tx.to === UNISWAP_ROUTER) ||
               tx.to === AERODROME_ROUTER ||
-              tx.to === ONEINCH_ROUTER,
-          ).length,
+              tx.to === ONEINCH_ROUTER
+            ) {
+              acc.tokenSwap++;
+            }
+            
+            // ENS count
+            if (ensAddresses.includes(tx.to)) {
+              acc.ens++;
+            }
+            
+            // Bridge count
+            if (bridges.has(tx.to)) {
+              acc.bridge++;
+            }
+            
+            // Lend count
+            if (lendBorrowEarn.has(tx.to) || tx.from === MOONWELL_WETH_UNWRAPPER) {
+              acc.lend++;
+            }
+            
+            return acc;
+          },
+          { tokenSwap: 0, ens: 0, bridge: 0, lend: 0 },
         );
 
-        // ENS count calculation
-        setEnsCount(
-          allTransactions.filter((tx) =>
-            [
-              ETH_REGISTRAR_CONTROLLER_1,
-              ETH_REGISTRAR_CONTROLLER_2,
-              BASENAMES_REGISTRAR_CONTROLLER,
-              BASENAMES_EA_REGISTRAR_CONTROLLER,
-            ].includes(tx.to),
-          ).length,
-        );
-
-        setBridgeCount(allTransactions.filter((tx) => bridges.has(tx.to)).length);
-
-        setLendCount(
-          allTransactions.filter(
-            (tx) => lendBorrowEarn.has(tx.to) || tx.from === MOONWELL_WETH_UNWRAPPER,
-          ).length,
-        );
+        setTokenSwapCount(counts.tokenSwap);
+        setEnsCount(counts.ens);
+        setBridgeCount(counts.bridge);
+        setLendCount(counts.lend);
 
         setBuildCount(
           allEthereumDeployments.length + allBaseDeployments.length + allSepoliaDeployments.length,
