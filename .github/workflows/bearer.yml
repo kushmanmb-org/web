@@ -27,7 +27,7 @@ concurrency:
 
 jobs:
   bearer:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     timeout-minutes: 15
     steps:
       # Checkout project source

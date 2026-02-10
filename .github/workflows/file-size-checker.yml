@@ -17,7 +17,7 @@ concurrency:
 jobs:
   check-file-sizes:
     name: File Size Check
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     timeout-minutes: 10
 
     steps:
