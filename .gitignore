@@ -3,6 +3,14 @@
 .env.*
 !.env.example
 !.env.sample
+!.env.template
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+.envrc
+.envrc.local
 
 # Private keys and certificates
 *.pem
@@ -20,6 +28,24 @@
 *.csr
 privatekey*
 private-key*
+service-account*.json
+gcp-key*.json
+*.keystore
+keystore.json
+
+# Blockchain/Crypto specific
+mnemonic*
+seed-phrase*
+wallet*.json
+wallet*.dat
+keystore/
+.secret
+hardhat.config.local.js
+hardhat.config.local.ts
+truffle-config.local.js
+foundry.toml.local
+*.wallet
+account*.json
 
 # Credentials and secrets
 credentials.json
@@ -30,6 +56,13 @@ secret.json
 .aws/credentials
 .gcp/credentials
 .azure/credentials
+auth.json
+auth.config.json
+oauth*.json
+token*.json
+api-keys.json
+.npmrc.local
+.yarnrc.local
 
 # Database files and backups
 *.db
@@ -48,6 +81,30 @@ data/
 *.tsv
 *.json.gz
 *.tar.gz
+
+# Docker secrets
+docker-compose.override.yml
+docker-compose.local.yml
+.dockerignore.local
+secrets/
+
+# Terraform/Infrastructure
+*.tfvars
+*.tfvars.json
+terraform.tfstate
+terraform.tfstate.backup
+.terraform/
+*.tfstate.*
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Kubernetes secrets
+*-secret.yaml
+*-secret.yml
+secrets.yaml
+secrets.yml
 # IDE and editor files
 .vscode/
 .idea/
