@@ -25,6 +25,14 @@ const ETH_REGISTRAR_CONTROLLER_2 = '0x253553366da8546fc250f225fe3d25d0c782303b';
 const BASENAMES_REGISTRAR_CONTROLLER = '0x4ccb0bb02fcaba27e82a56646e81d8c5bc4119a5'; // Basenames RegistrarController
 const BASENAMES_EA_REGISTRAR_CONTROLLER = '0xd3e6775ed9b7dc12b205c8e608dc3767b9e5efda'; // Basenames EARegistrarController
 
+// ENS Addresses array for efficient lookups
+const ENS_ADDRESSES = [
+  ETH_REGISTRAR_CONTROLLER_1,
+  ETH_REGISTRAR_CONTROLLER_2,
+  BASENAMES_REGISTRAR_CONTROLLER,
+  BASENAMES_EA_REGISTRAR_CONTROLLER,
+];
+
 // Lending and Borrowing
 const MOONWELL_WETH_UNWRAPPER = '0x1382cff3cee10d283dcca55a30496187759e4caf'; // Base Moonwell WETH Unwrapper
 
@@ -367,13 +375,6 @@ export default function UsernameProfileSectionHeatmap() {
         setActivityPeriod(activity);
 
         // Optimize: single pass through transactions instead of multiple filters
-        const ensAddresses = [
-          ETH_REGISTRAR_CONTROLLER_1,
-          ETH_REGISTRAR_CONTROLLER_2,
-          BASENAMES_REGISTRAR_CONTROLLER,
-          BASENAMES_EA_REGISTRAR_CONTROLLER,
-        ];
-        
         const counts = allTransactions.reduce(
           (acc, tx) => {
             // Token swap count
@@ -388,7 +389,7 @@ export default function UsernameProfileSectionHeatmap() {
             }
             
             // ENS count
-            if (ensAddresses.includes(tx.to)) {
+            if (ENS_ADDRESSES.includes(tx.to)) {
               acc.ens++;
             }
             

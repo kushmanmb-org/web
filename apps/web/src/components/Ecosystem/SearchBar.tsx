@@ -79,7 +79,7 @@ export function SearchBar({
       setLocalSearch(value); // Update local state immediately for responsive input
       
       // Debounce the parent state update with 300ms delay
-      debounced.current = window.setTimeout(() => {
+      debounced.current = setTimeout(() => {
         setSearch(value);
       }, 300);
     },
