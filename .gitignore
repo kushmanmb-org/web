@@ -116,10 +116,10 @@ secret.json
 *.secret
 *.secrets
 *.credentials
-.aws/
-.gcp/
+**/.aws/
+**/.gcp/
 gcp-credentials*.json
-.azure/
+**/.azure/
 azure-credentials*.json
 auth.json
 auth.config.json
