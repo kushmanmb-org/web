@@ -37,9 +37,8 @@ export default function RegistrationSuccessMessage() {
         }
         setPopupMessage('USDC claimed successfully!');
       } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : 'Failed to claim USDC: Unknown error';
-        setPopupMessage(errorMessage);
+        // Use a generic error message to avoid exposing sensitive API error details
+        setPopupMessage('An unexpected error occurred while claiming USDC');
         // Error details logged internally, not exposing sensitive data
       }
     })();

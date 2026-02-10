@@ -26,7 +26,7 @@ Add the following domains to your firewall allowlist:
 - `fonts.googleapis.com`
 - `fonts.gstatic.com`
 
-For GitHub Actions, this can be configured in the repository's [Copilot coding agent settings](https://github.com/kushmanmb-org/web/settings/copilot/coding_agent).
+For GitHub Actions, this can be configured in the repository's Copilot coding agent settings.
 
 ### Option 2: Pre-Build Setup (Alternative)
 
