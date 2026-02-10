@@ -114,9 +114,6 @@ __metadata:
     "@coinbase/onchainkit": 0.38.6
     "@datadog/browser-logs": ^5.23.3
     "@datadog/browser-rum": ^5.23.3
-    "@fontsource-variable/roboto-mono": ^5.2.8
-    "@fontsource/inter": ^5.2.8
-    "@fontsource/inter-tight": ^5.2.7
     "@frames.js/render": ^0.5.5
     "@guildxyz/sdk": 2.6.0
     "@headlessui/react": ^1.7.19
@@ -3521,27 +3518,6 @@ __metadata:
   version: 0.2.9
   resolution: "@floating-ui/utils@npm:0.2.9"
   checksum: d518b80cec5a323e54a069a1dd99a20f8221a4853ed98ac16c75275a0cc22f75de4f8ac5b121b4f8990bd45da7ad1fb015b9a1e4bac27bb1cd62444af84e9784
-  languageName: node
-  linkType: hard
-
-"@fontsource-variable/roboto-mono@npm:^5.2.8":
-  version: 5.2.8
-  resolution: "@fontsource-variable/roboto-mono@npm:5.2.8"
-  checksum: 956ec43d45900d2ff719f0771ad629db5206f93de7390a9303feab8f1f920d033d0060fb4939f6b54a5eb3b724cc9c1c7695f798f725e1b784796a517a70aea0
-  languageName: node
-  linkType: hard
-
-"@fontsource/inter-tight@npm:^5.2.7":
-  version: 5.2.7
-  resolution: "@fontsource/inter-tight@npm:5.2.7"
-  checksum: 1a052da053276e6695c61d5603f0e121781433177e74e8e0d8f2da607fe552f8fb2ef26bc527f34eb0f61ac4d5315486af4832b0085b224dc4a6e9ab08ca027f
-  languageName: node
-  linkType: hard
-
-"@fontsource/inter@npm:^5.2.8":
-  version: 5.2.8
-  resolution: "@fontsource/inter@npm:5.2.8"
-  checksum: 0225fcaa76dca5de04d0bf010d714a92e3441f6b659c7829e1266df83f927239aba09458e80f08e09bd496e0d344102e60ba7acf99ec033c2863ac9e6dca85b4
   languageName: node
   linkType: hard
 
