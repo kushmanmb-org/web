@@ -69,36 +69,34 @@ export default function UsernameProfileSettingsAvatar() {
     [logError, profileUsername, updateTextRecords],
   );
 
-  const saveAvatar = useCallback(() => {
-    // Write the records
-    writeTextRecords()
-      .then()
-      .catch((error) => {
-        logError(error, 'Failed to write text records');
-      });
+  const saveAvatar = useCallback(async () => {
+    try {
+      await writeTextRecords();
+    } catch (error) {
+      logError(error, 'Failed to write text records');
+    }
   }, [logError, writeTextRecords]);
 
   const onClickSave = useCallback(
-    (event: React.MouseEvent<HTMLButtonElement>) => {
+    async (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
 
       if (!currentWalletIsProfileEditor) return false;
 
       if (avatarFile) {
-        uploadFile(avatarFile)
-          .then((result) => {
-            // set the uploaded result as the url
-            if (result) {
-              logEventWithContext('avatar_upload_success', ActionType.change);
-              setAvatarUploadedAndReadyToSave(true);
-            }
-          })
-          .catch((error) => {
-            logError(error, 'Failed to upload avatar');
-            logEventWithContext('avatar_upload_failed', ActionType.error);
-          });
+        try {
+          const result = await uploadFile(avatarFile);
+          // set the uploaded result as the url
+          if (result) {
+            logEventWithContext('avatar_upload_success', ActionType.change);
+            setAvatarUploadedAndReadyToSave(true);
+          }
+        } catch (error) {
+          logError(error, 'Failed to upload avatar');
+          logEventWithContext('avatar_upload_failed', ActionType.error);
+        }
       } else {
-        saveAvatar();
+        await saveAvatar();
       }
     },
     [

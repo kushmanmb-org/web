@@ -62,7 +62,7 @@ export default function RegistrationProfileForm() {
   }, []);
 
   const onClickSave = useCallback(
-    (event: React.MouseEvent<HTMLButtonElement>) => {
+    async (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
       if (currentFormStep === FormSteps.Description) {
         transitionFormOpacity(() => setCurrentFormStep(FormSteps.Socials));
@@ -73,11 +73,11 @@ export default function RegistrationProfileForm() {
       }
 
       if (currentFormStep === FormSteps.Keywords) {
-        writeTextRecords()
-          .then()
-          .catch((error) => {
-            logError(error, 'Failed to write text records');
-          });
+        try {
+          await writeTextRecords();
+        } catch (error) {
+          logError(error, 'Failed to write text records');
+        }
       }
 
       event.preventDefault();

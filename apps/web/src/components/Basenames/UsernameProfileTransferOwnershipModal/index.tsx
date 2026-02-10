@@ -80,20 +80,19 @@ export default function UsernameProfileTransferOwnershipModal({
     setCurrentOwnershipStep(OwnershipSteps.WalletRequests);
   }, [address, isValidRecipientAddress, setCurrentOwnershipStep]);
 
-  const handleOnClose = useCallback(() => {
+  const handleOnClose = useCallback(async () => {
     if (currentOwnershipStep !== OwnershipSteps.Success) {
       onClose();
       return;
     }
 
-    profileRefetch()
-      .then(() => {
-        setShowProfileSettings(false);
-        onClose();
-      })
-      .catch((error) => {
-        logError(error, 'Failed to refetch Owner');
-      });
+    try {
+      await profileRefetch();
+      setShowProfileSettings(false);
+      onClose();
+    } catch (error) {
+      logError(error, 'Failed to refetch Owner');
+    }
   }, [currentOwnershipStep, logError, onClose, profileRefetch, setShowProfileSettings]);
 
   // Memos

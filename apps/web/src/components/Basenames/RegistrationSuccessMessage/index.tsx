@@ -21,23 +21,24 @@ export default function RegistrationSuccessMessage() {
 
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
 
-  const claimUSDC = useCallback(() => {
+  const claimUSDC = useCallback(async () => {
     setPopupMessage('USDC is being sent to your wallet');
-    fetch(`${process.env.NEXT_PUBLIC_USDC_URL}?address=${address}`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    })
-      .then(async (response) => {
-        if (!response.ok) {
-          const resp = (await response.json()) as { error: string };
-          throw new Error(resp.error);
-        }
-        setPopupMessage('USDC claimed successfully!');
-      })
-      .catch((error) => {
-        setPopupMessage(`${error.message}`);
-        console.error('Error:', error);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_USDC_URL}?address=${address}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
       });
+
+      if (!response.ok) {
+        const resp = (await response.json()) as { error: string };
+        throw new Error(resp.error);
+      }
+      setPopupMessage('USDC claimed successfully!');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      setPopupMessage(errorMessage);
+      console.error('Error:', error);
+    }
   }, [address]);
 
   const closePopup = useCallback(() => setPopupMessage(null), []);
