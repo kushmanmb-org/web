@@ -1,24 +1,122 @@
+# Environment Variables & Configuration
 .env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.local.env
+**/config.local.*
+
+# Private Keys & Certificates
 *.pem
 *.key
 *.p8
 *.p12
 *.pfx
 *.id_rsa
-	*.id_ed25519
+*.id_ed25519
 *.id_ecdsa
+*.ppk
+*.der
+*.crt
+*.cer
+*.csr
+*.jks
+*.keystore
+
+# API Keys & Secrets
 credentials.json
 secrets.json
+secret.json
+*.secrets.json
+api-keys.json
+service-account*.json
+
+# Cloud Provider Credentials
 .aws/credentials
+.aws/config
+.gcp/credentials
+.azure/credentials
+gcloud-service-key.json
+google-credentials.json
+sa-private-key.json
+
+# Blockchain & Web3 Wallets
+keystore/
+wallet.json
+wallet.dat
+mnemonic.txt
+seed.txt
+private-key.txt
+*.wallet
+
+# Database & Backups
+*.sql
+*.sqlite
+*.sqlite3
+*.db-journal
+dump.rdb
+*.dump
+*.backup
+*.bak
+
+# IDE & Editor Directories
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+.metadata/
+
+# Dependencies
 node_modules/
+vendor/
+bower_components/
+
+# Build Artifacts & Output
 dist/
 build/
 .next/
-logs/
-.DS_Store/
-**/coverage/
 out/
+*.tsbuildinfo
+
+# Logs & Temporary Files
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pids/
+*.pid
+*.seed
+*.pid.lock
+lib-cov/
+.grunt/
+.lock-wscript/
+.tmp/
+tmp/
+temp/
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs_vista.db
+Thumbs.db
+desktop.ini
+
+# Test Coverage
+**/coverage/
+.nyc_output/
+*.lcov
+
+# Yarn
 .yarn/cache/
 .yarn/install-state.gz
+.pnp.*
