@@ -15,13 +15,9 @@
 *.p12
 *.pfx
 *.id_rsa
-*.id_rsa.pub
 *.id_ed25519
-*.id_ed25519.pub
 *.id_ecdsa
-*.id_ecdsa.pub
 *.id_dsa
-*.id_dsa.pub
 *.ppk
 *.der
 *.crt
@@ -41,7 +37,6 @@ id_ed25519
 id_ecdsa
 id_dsa
 known_hosts
-authorized_keys
 # GPG keys
 *.gpg
 *.asc
@@ -199,7 +194,6 @@ kubeconfig*
 !*-secret.example.yml
 # IDE and editor files
 .vscode/
-.vscode/settings.json
 .idea/
 *.swp
 *.swo
@@ -254,7 +248,6 @@ Thumbs.db
 # Mobile development (iOS/Android) 
 # iOS
 *.mobileprovision
-*.certSigningRequest
 *.ipa
 *.dSYM.zip
 *.dSYM
@@ -288,12 +281,15 @@ jenkins.local.xml
 *.save
 *~.nib
 *.tmp
-*.tar
-*.zip
-*.rar
-*.7z
-*.dmg
-*.iso
+# Backup archives (specific patterns)
+backup-*.tar
+backup-*.zip
+backup-*.tar.gz
+*-backup.tar
+*-backup.zip
+*-backup.tar.gz
+*.backup.tar
+*.backup.zip
 # Database dumps
 *.dump.sql
 *.dump.gz
