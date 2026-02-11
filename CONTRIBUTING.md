@@ -17,6 +17,17 @@ The following is a set of guidelines for contributing to Base Web. These are jus
 
 This project and everyone participating in it is governed by our [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
 
+## Getting Started
+
+Before you start contributing, make sure you have configured your Git identity:
+
+```bash
+git config user.name "Your Name"
+git config user.email "your.email@example.com"
+```
+
+This ensures your commits are properly attributed to you.
+
 ## How Can I Contribute?
 
 ### Reporting Bugs
