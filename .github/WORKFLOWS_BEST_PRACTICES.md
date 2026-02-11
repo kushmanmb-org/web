@@ -101,6 +101,18 @@ All workflows follow a consistent structure:
 - **Triggers:** Manual dispatch and weekday schedule
 - **Timeout:** 20 minutes
 
+### dependency-review.yml - Dependency Review
+- **Purpose:** Reviews dependency changes in pull requests for vulnerabilities
+- **Triggers:** Pull requests to master
+- **Timeout:** 10 minutes
+- **Features:** Fails on high/critical vulnerabilities, checks licenses, comments on PR
+
+### codeql.yml - CodeQL Security Analysis
+- **Purpose:** Performs comprehensive security analysis using CodeQL
+- **Triggers:** Push, pull requests, weekly schedule, and manual dispatch
+- **Timeout:** 30 minutes
+- **Features:** Uses security-and-quality queries, automated vulnerability detection
+
 ## Guidelines for Creating New Workflows
 
 When creating a new workflow, ensure you:
