@@ -42,7 +42,7 @@ jobs:
         with:
           languages: ${{ matrix.language }}
           # Use default queries plus security-extended for comprehensive scanning
-          queries: +security-extended,security-and-quality
+          queries: security-and-quality
 
       # Autobuild attempts to build any compiled languages
       - name: Autobuild
