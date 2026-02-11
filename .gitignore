@@ -265,7 +265,7 @@ pids/
 # Output of 'npm pack'
 *.tgz
 
-# dotenv environment variable files (already covered but adding more)
+# dotenv environment variable files (explicit entries for clarity)
 .env.development.local
 .env.test.local
 .env.production.local
