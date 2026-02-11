@@ -204,6 +204,19 @@ out/
 .yarn/cache/
 .yarn/install-state.gz
 
+# API development and mocking
+.http-client/
+*.rest.local
+http-client.env.json
+http-client.private.env.json
+**/mocks/private/
+mock-server-*.json
+api-mocks-private/
+postman_environment.json
+insomnia-*.json
+thunder-client-*.json
+.vscode/settings.json
+
 # Logs and temporary files
 logs/
 *.log
@@ -213,6 +226,25 @@ yarn-error.log*
 tmp/
 temp/
 
+# Error tracking and monitoring dumps
+*.har
+*.hprof
+error-*.json
+errors/
+crash-reports/
+sentry-debug/
+datadog-*.log
+newrelic_agent.log
+dd-agent.log
+
+# Session storage and local storage exports
+localstorage-*.json
+sessionstorage-*.json
+indexeddb-*.json
+cookies-*.json
+localStorage.json
+sessionStorage.json
+
 # OS files
 .DS_Store
 .DS_Store/
@@ -221,6 +253,19 @@ Thumbs.db
 # Test coverage
 **/coverage/
 .nyc_output/
+
+# Security and audit reports (may contain sensitive vulnerability details)
+security-report*.json
+audit-report*.json
+vulnerability-report*.json
+penetration-test*.pdf
+security-scan-*.json
+snyk-report*.json
+trivy-report*.json
+dependency-check-report*.html
+npm-audit-*.json
+yarn-audit-*.json
+owasp-*.html
 
 # Test data and mocks (that might contain sensitive data)
 **/test-data/private/
@@ -233,3 +278,91 @@ mock-private-keys*.json
 # But allow safe test fixtures
 !**/test-data/**/*.example.*
 !**/fixtures/**/*.example.*
+
+# Playwright E2E testing
+**/playwright/.auth/
+**/playwright-report/
+**/test-results/
+playwright-state.json
+**/storage-state.json
+**/auth-state.json
+**/e2e/.auth/
+**/e2e/auth/
+*.auth.json
+
+# Next.js specific
+.next/
+out/
+.vercel
+*.tsbuildinfo
+next-env.d.ts.local
+.next/cache/
+.next/trace
+*.trace.json
+build-manifest.json.local
+react-loadable-manifest.json.local
+
+# Source maps (may expose source code)
+*.js.map
+*.css.map
+*.ts.map
+*.tsx.map
+
+# Cache directories
+.cache/
+.parcel-cache/
+.turbo/
+.swc/
+.webpack/
+.metro/
+
+# Debug and profiling
+*.cpuprofile
+*.heapsnapshot
+*.heapdump
+*-heap.json
+chrome-profiler-events*.json
+isolate-*.log
+v8.log
+perf.data
+flamegraph.svg
+
+# Local overrides and personal configs
+*.local.js
+*.local.ts
+*.local.jsx
+*.local.tsx
+*.local.json
+*.local.yaml
+*.local.yml
+*.local.toml
+*.local.ini
+*.local.conf
+*.local.config
+.local/
+local/
+my-*.json
+my-*.js
+my-*.ts
+
+# Backup and temporary files from editors
+*.tmp
+*.temp
+*.cache
+*~.nib
+*.bkp
+
+# Personal notes and documentation
+NOTES.md
+NOTES.txt
+TODO.md
+TODO.txt
+SCRATCH.md
+personal-notes/
+my-notes/
+
+# Local scripts and utilities
+run-local.*
+start-local.*
+deploy-local.*
+setup-local.*
