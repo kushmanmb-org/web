@@ -17,21 +17,44 @@
 *.id_rsa
 *.id_ed25519
 *.id_ecdsa
+*.id_dsa
 *.ppk
 *.der
 *.crt
 *.cer
 *.csr
+*.ca-bundle
+*.ca-bundle.crt
 privatekey*
 private-key*
 service-account*.json
 gcp-key*.json
 *.keystore
 keystore.json
+# SSH keys and configs
+id_rsa
+id_ed25519
+id_ecdsa
+id_dsa
+known_hosts
+# GPG keys
+*.gpg
+*.asc
+*.sig
+secring.gpg
+pubring.gpg
+trustdb.gpg
+# SSL/TLS
+*.jks
+*.bks
+*.cert
+*.certSigningRequest
+ca-cert*.pem
 
 # Blockchain/Crypto specific
 **/mnemonic.*
 **/seed-phrase.*
+**/recovery-phrase.*
 wallet-keys*.json
 wallet-private*.json
 *.wallet.json
@@ -45,24 +68,73 @@ foundry.toml.local
 *.wallet
 account-keys*.json
 private-account*.json
+# Smart contract deployment keys
+deployment-key*.json
+deployer-key*.json
+*.deployment-key
+# Ethereum/Web3 specific
+geth/
+geth-data/
+chaindata/
+lightchaindata/
+.ethereum/
+*.ethers-wallet
+ethers-wallet*.json
+# Metamask and wallet backups
+metamask-backup*.json
+coinbase-wallet-backup*.json
 
 # Credentials and secrets
 credentials.json
+credentials*.json
 secrets.json
 secret.json
 *.secret
+*.secrets
 *.credentials
 .aws/credentials
+.aws/config
 .gcp/credentials
 .azure/credentials
 auth.json
 auth.config.json
 oauth-credentials*.json
 *-token.json
+*-token.txt
+*.token
 access-token*.json
+refresh-token*.json
 api-keys.json
+api-key*.json
+apikey*.json
+*.apikey
 .npmrc.local
 .yarnrc.local
+# Session and authentication
+session.json
+session*.json
+sessions/
+*.session
+cookie-secret*
+jwt-secret*
+auth-secret*
+# Password files
+passwords.txt
+password.txt
+*.password
+.password
+# API and service keys
+*.api-key
+firebase-adminsdk*.json
+google-services*.json
+GoogleService-Info*.plist
+# Cloud provider specific
+.awsconfig
+.boto
+.s3cfg
+gcloud-credentials*.json
+azure-credentials*.json
+do-credentials*.json
 
 # Database files and backups
 *.db
@@ -85,8 +157,13 @@ data/
 # Docker secrets
 docker-compose.override.yml
 docker-compose.local.yml
+docker-compose.*.local.yml
 .dockerignore.local
 secrets/
+.docker/
+# Docker build secrets
+.docker-build-secrets
+docker-build*.env
 
 # Terraform/Infrastructure
 *.tfvars
@@ -105,6 +182,10 @@ override.tf.json
 *-secret.yml
 secrets.yaml
 secrets.yml
+secret-*.yaml
+secret-*.yml
+kubeconfig*
+!kubeconfig.example
 !example-secret.yaml
 !example-secret.yml
 !template-secret.yaml
@@ -116,7 +197,15 @@ secrets.yml
 .idea/
 *.swp
 *.swo
+*.swn
 *~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+.vimrc.local
+.nvimrc.local
 
 # Dependencies and build artifacts
 node_modules/
@@ -133,8 +222,19 @@ logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+lerna-debug.log*
+pids/
+*.pid
+*.seed
+*.pid.lock
 tmp/
 temp/
+.tmp/
+.temp/
+# Debug and profiling
+*.trace
+*.heapsnapshot
+*.cpuprofile
 
 # OS files
 .DS_Store
@@ -144,3 +244,78 @@ Thumbs.db
 # Test coverage
 **/coverage/
 .nyc_output/
+
+# Mobile development (iOS/Android) 
+# iOS
+*.mobileprovision
+*.ipa
+*.dSYM.zip
+*.dSYM
+DerivedData/
+ios/Pods/
+ios/.xcode.env.local
+# Android
+key.properties
+keystore.properties
+local.properties
+release.keystore
+debug.keystore
+# React Native
+.expo/
+.expo-shared/
+
+# CI/CD specific
+.circleci/config.local.yml
+.gitlab-ci.local.yml
+.travis.local.yml
+.github/workflows/*.local.yml
+jenkins.local.xml
+.buildkite/pipeline.local.yml
+# CI environment files
+.ci.env
+.cd.env
+
+# Backup and archive files
+*.old
+*.orig
+*.save
+*~.nib
+*.tmp
+# Backup archives (specific patterns)
+backup-*.tar
+backup-*.zip
+backup-*.tar.gz
+*-backup.tar
+*-backup.zip
+*-backup.tar.gz
+*.backup.tar
+*.backup.zip
+# Database dumps
+*.dump.sql
+*.dump.gz
+
+# Cache directories
+.cache/
+.parcel-cache/
+.turbo/
+.eslintcache
+.stylelintcache
+.node-version
+.tool-versions
+.vercel/
+.netlify/
+
+# Sentry
+.sentryclirc
+sentry.properties
+
+# Miscellaneous sensitive patterns
+**/local.settings.json
+appsettings.local.json
+config.local.*
+*.local.config
+*-local.json
+*_local.json
+.envrc
+.envrc.*
+!.envrc.example
