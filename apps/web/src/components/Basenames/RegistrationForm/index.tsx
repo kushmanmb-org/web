@@ -75,7 +75,7 @@ export default function RegistrationForm() {
 
   const { increment, decrement } = useYearSelectionCallbacks(setYears, {
     onIncrement: () => logEventWithContext('registration_form_increment_year', ActionType.click),
-    onDecrement: () => logEventWithContext('registration_form_decement_year', ActionType.click),
+    onDecrement: () => logEventWithContext('registration_form_decrement_year', ActionType.click),
   });
 
   const ethUsdPrice = useEthPriceFromUniswap();

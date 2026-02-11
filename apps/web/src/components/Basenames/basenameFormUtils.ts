@@ -20,15 +20,17 @@ export function useYearSelectionCallbacks(
     onDecrement?: () => void;
   },
 ) {
+  const { onIncrement, onDecrement } = options ?? {};
+
   const increment = useCallback(() => {
-    options?.onIncrement?.();
+    onIncrement?.();
     setYears((n) => n + 1);
-  }, [setYears, options]);
+  }, [setYears, onIncrement]);
 
   const decrement = useCallback(() => {
-    options?.onDecrement?.();
+    onDecrement?.();
     setYears((n) => (n > 1 ? n - 1 : n));
-  }, [setYears, options]);
+  }, [setYears, onDecrement]);
 
   return { increment, decrement };
 }

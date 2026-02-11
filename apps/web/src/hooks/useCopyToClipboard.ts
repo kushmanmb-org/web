@@ -18,18 +18,23 @@ export function useCopyToClipboard(timeout = 2000) {
   }, []);
 
   const copyToClipboard = useCallback(
-    (text: string) => {
+    async (text: string) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
 
-      void navigator.clipboard.writeText(text);
-      setHasCopied(true);
+      try {
+        await navigator.clipboard.writeText(text);
+        setHasCopied(true);
 
-      timeoutRef.current = setTimeout(() => {
-        setHasCopied(false);
-        timeoutRef.current = null;
-      }, timeout);
+        timeoutRef.current = setTimeout(() => {
+          setHasCopied(false);
+          timeoutRef.current = null;
+        }, timeout);
+      } catch (error) {
+        // Silently fail - clipboard access may be restricted
+        console.warn('Failed to copy to clipboard:', error);
+      }
     },
     [timeout],
   );
