@@ -6,6 +6,10 @@
  * underlying document content.
  */
 
+// Constants for validation
+const MIN_PROOF_LENGTH = 66; // Minimum length for a valid hex proof (0x + 32 bytes = 66 chars)
+const DOCUMENT_HASH_LENGTH = 66; // Length for a 32-byte hex hash (0x + 32 bytes = 66 chars)
+
 export type PDFClaim = {
   /**
    * The hash of the PDF document being verified
@@ -108,7 +112,7 @@ export async function verifyPdfClaim(claim: PDFClaim): Promise<VerificationResul
     }
 
     // Basic validation of proof format (hex string starting with 0x)
-    if (!claim.proof.startsWith('0x') || claim.proof.length < 66) {
+    if (!claim.proof.startsWith('0x') || claim.proof.length < MIN_PROOF_LENGTH) {
       return {
         isValid: false,
         status: 'invalid_proof',
@@ -117,7 +121,7 @@ export async function verifyPdfClaim(claim: PDFClaim): Promise<VerificationResul
     }
 
     // Validate documentHash format
-    if (!claim.documentHash.startsWith('0x') || claim.documentHash.length !== 66) {
+    if (!claim.documentHash.startsWith('0x') || claim.documentHash.length !== DOCUMENT_HASH_LENGTH) {
       return {
         isValid: false,
         status: 'invalid_claim',
@@ -165,7 +169,8 @@ export async function verifyPdfClaim(claim: PDFClaim): Promise<VerificationResul
  * Alias for verifyPdfClaim with snake_case naming convention
  * This is provided for compatibility with the zkpdf_lib naming scheme
  * 
- * @deprecated Use verifyPdfClaim (camelCase) instead
+ * @deprecated This alias will be removed in v2.0.0. Use verifyPdfClaim (camelCase) instead.
+ * Migration path: Simply replace `verify_pdf_claim` with `verifyPdfClaim` in your code.
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const verify_pdf_claim = verifyPdfClaim;
@@ -188,7 +193,7 @@ async function verifyProofInternal(claim: PDFClaim): Promise<boolean> {
   // For now, perform basic validation
   return (
     claim.proof.length > 0 &&
-    claim.documentHash.length === 66 &&
+    claim.documentHash.length === DOCUMENT_HASH_LENGTH &&
     claim.claimType.length > 0
   );
 }
