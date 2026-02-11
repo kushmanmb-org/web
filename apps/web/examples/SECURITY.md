@@ -310,9 +310,15 @@ git push --force
 If you discover a security vulnerability:
 
 1. **DO NOT** create a public GitHub issue
-2. Email security@[domain].com with details
-3. Allow time for the issue to be addressed
-4. Follow responsible disclosure practices
+2. Contact the repository maintainers privately through GitHub Security Advisories
+3. For critical issues, also email the repository owner directly
+4. Include detailed information about the vulnerability
+5. Allow reasonable time for the issue to be addressed
+6. Follow responsible disclosure practices
+
+**GitHub Security Advisory:** Navigate to the repository's Security tab and click "Report a vulnerability"
+
+For more information on responsible disclosure, see [GitHub's guide on coordinated disclosure](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing/privately-reporting-a-security-vulnerability).
 
 ## ✅ Summary
 

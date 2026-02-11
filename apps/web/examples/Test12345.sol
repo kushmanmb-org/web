@@ -15,7 +15,12 @@ contract Test12345 {
     // Event emitted when ownership transfer is completed
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     
+    // Event emitted when ownership transfer is cancelled
+    event OwnershipTransferCancelled(address indexed owner, address indexed cancelledPendingOwner);
+    
     // Constructor to set the contract owner
+    // Note: Solidity 0.4.x uses function name matching contract name
+    // Modern Solidity (0.5.0+) uses 'constructor' keyword instead
     function Test12345() public {
         owner = msg.sender;
     }
@@ -60,6 +65,8 @@ contract Test12345 {
     // Cancel pending ownership transfer (only current owner can call)
     function cancelOwnershipTransfer() public onlyOwner {
         require(pendingOwner != address(0), "No pending transfer");
+        address cancelled = pendingOwner;
         pendingOwner = address(0);
+        emit OwnershipTransferCancelled(owner, cancelled);
     }
 }

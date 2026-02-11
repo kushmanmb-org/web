@@ -110,6 +110,7 @@ contract Test12345 {
     event ValueUpdated(bytes32 indexed valueHash, address indexed updatedBy);
     event OwnershipTransferInitiated(address indexed currentOwner, address indexed pendingOwner);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event OwnershipTransferCancelled(address indexed owner, address indexed cancelledPendingOwner);
     
     function Test12345() public {
         owner = msg.sender;
@@ -149,7 +150,9 @@ contract Test12345 {
     
     function cancelOwnershipTransfer() public onlyOwner {
         require(pendingOwner != address(0), "No pending transfer");
+        address cancelled = pendingOwner;
         pendingOwner = address(0);
+        emit OwnershipTransferCancelled(owner, cancelled);
     }
 }
 ```
