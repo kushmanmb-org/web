@@ -24,10 +24,20 @@
 *.csr
 privatekey*
 private-key*
+id_rsa*
+id_ed25519*
+id_ecdsa*
 service-account*.json
 gcp-key*.json
 *.keystore
 keystore.json
+*.jks
+*.truststore
+truststore.json
+*.gpg
+*.asc
+*.sig
+known_hosts.local
 
 # Blockchain/Crypto specific
 **/mnemonic.*
@@ -43,6 +53,11 @@ hardhat.config.local.js
 hardhat.config.local.ts
 truffle-config.local.js
 foundry.toml.local
+.brownie/
+brownie-config.local.yaml
+ape-config.local.yaml
+**/contracts/.env
+**/scripts/.env
 *.wallet
 account-keys*.json
 private-account*.json
@@ -61,8 +76,11 @@ secret.json
 *.secrets
 *.credentials
 .aws/credentials
+.aws/config.local
 .gcp/credentials
+.gcloud/
 .azure/credentials
+.azure/config
 auth.json
 auth.config.json
 oauth-credentials*.json
@@ -80,6 +98,9 @@ api-secrets.json
 **/config/master.key
 jwt-secret*.txt
 session-secret*.txt
+passwords.txt
+password*.txt
+**/passwords/
 
 # Database files and backups
 *.db
@@ -89,6 +110,9 @@ session-secret*.txt
 *.dump
 *.bak
 *.backup
+*.old
+*.orig
+*.bak.gz
 **/db/backups/
 **/database/backups/
 *.db-journal
@@ -161,7 +185,9 @@ vault-password*.txt
 
 # IDE and editor files
 .vscode/
+.vscode/settings.local.json
 .idea/
+.idea/workspace.xml.local
 *.swp
 *.swo
 *~

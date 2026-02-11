@@ -17,7 +17,11 @@ The following sensitive file patterns are automatically excluded:
 #### Private Keys & Certificates
 - `*.pem`, `*.key`, `*.p8`, `*.p12`, `*.pfx`
 - `*.id_rsa`, `*.id_ed25519`, `*.id_ecdsa`, `*.ppk`
+- `id_rsa*`, `id_ed25519*`, `id_ecdsa*` - SSH key variations
 - `privatekey*`, `private-key*`
+- `*.gpg`, `*.asc`, `*.sig` - GPG keys and signatures
+- `*.jks`, `*.truststore`, `truststore.json` - Java keystores
+- `known_hosts.local` - Local SSH known hosts
 
 #### Blockchain & Crypto Specific
 - `**/mnemonic.*`, `**/seed-phrase.*`
@@ -28,6 +32,9 @@ The following sensitive file patterns are automatically excluded:
 - `**/accounts.json`, `**/wallets.json`
 - `.secret`, `**/.secret-*`, `**/.secrets/`
 - `deployment-keys*.json`, `signer-keys*.json`
+- `.brownie/`, `brownie-config.local.yaml` - Brownie framework
+- `ape-config.local.yaml` - Ape framework
+- `**/contracts/.env`, `**/scripts/.env` - Environment files in contract/script directories
 
 #### Development Environment Files
 - `.env`, `.env.*`, `.env.*.local` (except `.env.example`)
@@ -45,9 +52,14 @@ The following sensitive file patterns are automatically excluded:
 - `.netrc`, `.git-credentials`
 - `**/config/secrets.yml`, `**/config/credentials.yml`, `**/config/master.key`
 - `jwt-secret*.txt`, `session-secret*.txt`
+- `passwords.txt`, `password*.txt`, `**/passwords/` - Password files and directories
+- `.aws/credentials`, `.aws/config.local` - AWS credentials
+- `.gcp/credentials`, `.gcloud/` - GCP credentials
+- `.azure/credentials`, `.azure/config` - Azure credentials
 
 #### Database & Data Files
 - Database files: `*.db`, `*.sqlite`, `*.sql`, `*.dump`, `*.backup`
+- Backup files: `*.bak`, `*.old`, `*.orig`, `*.bak.gz` - Backup file extensions
 - Database directories: `**/db/backups/`, `pgdata/`, `postgres-data/`
 - Data files: `*.dat`, `*.data`, `data/`
 - Private data directories: `**/private-data/`, `**/sensitive-data/`, `**/user-data/`, `**/private/`, `**/confidential/`
