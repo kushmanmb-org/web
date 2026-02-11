@@ -1,0 +1,110 @@
+name: Self-Hosted Runner Setup
+
+# This workflow helps manage self-hosted runners
+# It provides instructions and can be used to verify runner configuration
+
+on:
+  workflow_dispatch:
+    inputs:
+      runner-name:
+        description: 'Name of the runner to check'
+        required: false
+        type: string
+      action:
+        description: 'Action to perform'
+        required: true
+        type: choice
+        options:
+          - health-check
+          - list-runners
+          - runner-info
+        default: 'health-check'
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  runner-management:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Runner Health Check
+        if: inputs.action == 'health-check'
+        run: |
+          echo "=== Self-Hosted Runner Health Check ==="
+          echo "Runner: ${{ runner.name }}"
+          echo "OS: ${{ runner.os }}"
+          echo "Architecture: ${{ runner.arch }}"
+          echo "Temp Directory: ${{ runner.temp }}"
+          echo "Tool Cache: ${{ runner.tool_cache }}"
+          echo ""
+          echo "System Information:"
+          uname -a
+          echo ""
+          echo "Disk Space:"
+          df -h
+          echo ""
+          echo "Memory:"
+          free -h
+          echo ""
+          echo "CPU Info:"
+          nproc
+          echo ""
+          echo "✅ Health check completed successfully"
+
+      - name: Display Runner Info
+        if: inputs.action == 'runner-info'
+        run: |
+          echo "=== Runner Information ==="
+          echo "Runner Name: ${{ runner.name }}"
+          echo "Runner OS: ${{ runner.os }}"
+          echo "Runner Architecture: ${{ runner.arch }}"
+          echo "Workflow: ${{ github.workflow }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Repository: ${{ github.repository }}"
+          
+      - name: List Runners Information
+        if: inputs.action == 'list-runners'
+        run: |
+          echo "=== Configured Runner Labels ==="
+          echo "This workflow can run on:"
+          echo "  - ubuntu-latest (GitHub-hosted)"
+          echo "  - self-hosted (Self-hosted runners)"
+          echo ""
+          echo "To use self-hosted runners in your workflows, add:"
+          echo "  runs-on: self-hosted"
+          echo ""
+          echo "Or for specific labels:"
+          echo "  runs-on: [self-hosted, linux, x64]"
+
+  # Example job demonstrating self-hosted runner usage
+  example-self-hosted-job:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: github.event.inputs.action == 'runner-info'
+    
+    steps:
+      - name: Example Self-Hosted Runner Job
+        run: |
+          echo "=== Self-Hosted Runner Example ==="
+          echo "This is an example job that would run on a self-hosted runner."
+          echo ""
+          echo "To use this with actual self-hosted runners, change:"
+          echo "  runs-on: ubuntu-latest"
+          echo "to:"
+          echo "  runs-on: self-hosted"
+          echo ""
+          echo "Or use specific labels:"
+          echo "  runs-on: [self-hosted, linux, x64]"
+          echo "  runs-on: [self-hosted, linux, ARM64]"
+          echo "  runs-on: [self-hosted, windows, x64]"
+          echo "  runs-on: [self-hosted, macOS, x64]"
