@@ -17,15 +17,25 @@ The following sensitive file patterns are automatically excluded:
 #### Private Keys & Certificates
 - `*.pem`, `*.key`, `*.p8`, `*.p12`, `*.pfx`
 - `*.id_rsa`, `*.id_ed25519`, `*.id_ecdsa`, `*.ppk`
+- `id_rsa`, `id_rsa.pub`, `id_ed25519`, `id_ed25519.pub`, `id_ecdsa`, `id_ecdsa.pub` - Specific SSH key files
+- `**/.ssh/id_*` - SSH keys in .ssh directories
 - `privatekey*`, `private-key*`
+- `*.gpg`, `*.asc`, `*.sig` - GPG keys and signatures
+- `*.jks`, `*.truststore`, `truststore.json` - Java keystores
+- `known_hosts.local` - Local SSH known hosts
 
 #### Blockchain & Crypto Specific
 - `**/mnemonic.*`, `**/seed-phrase.*`
 - `wallet-keys*.json`, `wallet-private*.json`
 - `*.wallet.json`, `*.wallet.dat`, `*.wallet`
-- `**/keystore/`, `*.keystore`, `keystore.json`
+- `**/keystore/`, `**/keystores/`, `*.keystore`, `keystore.json`
 - `account-keys*.json`, `private-account*.json`
-- `.secret`
+- `**/accounts.json`, `**/wallets.json`
+- `.secret`, `**/.secret-*`, `**/.secrets/`
+- `deployment-keys*.json`, `signer-keys*.json`
+- `.brownie/`, `brownie-config.local.yaml` - Brownie framework
+- `ape-config.local.yaml` - Ape framework
+- `**/contracts/.env`, `**/scripts/.env` - Environment files in contract/script directories
 
 #### Development Environment Files
 - `.env`, `.env.*`, `.env.*.local` (except `.env.example`)
@@ -35,9 +45,37 @@ The following sensitive file patterns are automatically excluded:
 
 #### API Keys & Credentials
 - `credentials.json`, `secrets.json`, `secret.json`
-- `api-keys.json`, `*-token.json`, `access-token*.json`
-- `oauth-credentials*.json`, `auth.json`
+- `*.secret`, `*.secrets`, `*.credentials`
+- `api-keys.json`, `api-secrets.json`
+- `*-token.json`, `*-tokens.json`, `access-token*.json`
+- `oauth-credentials*.json`, `auth.json`, `auth.config.json`
 - `service-account*.json`, `gcp-key*.json`
+- `.netrc`, `.git-credentials`
+- `**/config/secrets.yml`, `**/config/credentials.yml`, `**/config/master.key`
+- `jwt-secret*.txt`, `session-secret*.txt`
+- `passwords.txt`, `my-password*.txt`, `password-list*.txt`, `**/passwords/` - Password files (specific patterns to avoid false positives)
+- `.aws/credentials`, `.aws/config.local` - AWS credentials
+- `.gcp/credentials`, `**/.gcloud/` - GCP credentials
+- `.azure/credentials`, `.azure/config` - Azure credentials
+
+#### Database & Data Files
+- Database files: `*.db`, `*.sqlite`, `*.sql`, `*.dump`, `*.backup`
+- Backup files: `*.bak`, `*.old`, `*.orig`, `*.bak.gz` - Backup file extensions
+- Database directories: `**/db/backups/`, `pgdata/`, `postgres-data/`
+- Data files: `*.dat`, `*.data`, `data/`
+- Private data directories: `**/private-data/`, `**/sensitive-data/`, `**/user-data/`, `**/private/`, `**/confidential/`
+- Backups and exports: `**/backups/`, `**/exports/`
+
+#### CI/CD & Deployment
+- CI configuration: `.circleci/local.yml`, `.travis.local.yml`, `gitlab-ci.local.yml`
+- Deploy keys: `**/.deploy-keys/`, `deploy-key*.pem`, `deploy-key*.key`, `deploy-key*.json`, `deployment-config.local.*`
+- Ansible vault: `ansible-vault-password*.txt`, `vault-password*.txt`, `**/ansible/vault-pass`
+- Docker secrets: `**/secrets/` (covers all secret directories including `.docker/secrets/`, `docker-secrets/`)
+
+#### Test Data
+- Private test data: `**/test-data/private/`, `**/fixtures/private/`
+- Test credentials: `test-keys*.json`, `test-credentials*.json`, `mock-private-keys*.json`
+- Note: Files matching `*.example.*` patterns are allowed for documentation purposes
 
 ## 🛡️ Smart Contract Security Best Practices
 

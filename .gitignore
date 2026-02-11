@@ -24,10 +24,24 @@
 *.csr
 privatekey*
 private-key*
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+id_ecdsa
+id_ecdsa.pub
+**/.ssh/id_*
 service-account*.json
 gcp-key*.json
 *.keystore
 keystore.json
+*.jks
+*.truststore
+truststore.json
+*.gpg
+*.asc
+*.sig
+known_hosts.local
 
 # Blockchain/Crypto specific
 **/mnemonic.*
@@ -37,32 +51,61 @@ wallet-private*.json
 *.wallet.json
 *.wallet.dat
 **/keystore/
+**/keystores/
 .secret
 hardhat.config.local.js
 hardhat.config.local.ts
 truffle-config.local.js
 foundry.toml.local
+.brownie/
+brownie-config.local.yaml
+ape-config.local.yaml
+**/contracts/.env
+**/scripts/.env
 *.wallet
 account-keys*.json
 private-account*.json
+**/accounts.json
+**/wallets.json
+**/.secret-*
+**/.secrets/
+deployment-keys*.json
+signer-keys*.json
 
 # Credentials and secrets
 credentials.json
 secrets.json
 secret.json
 *.secret
+*.secrets
 *.credentials
 .aws/credentials
+.aws/config.local
 .gcp/credentials
+**/.gcloud/
 .azure/credentials
+.azure/config
 auth.json
 auth.config.json
 oauth-credentials*.json
 *-token.json
+*-tokens.json
 access-token*.json
 api-keys.json
+api-secrets.json
 .npmrc.local
 .yarnrc.local
+.netrc
+.git-credentials
+**/config/secrets.yml
+**/config/credentials.yml
+**/config/master.key
+jwt-secret*.txt
+session-secret*.txt
+passwords.txt
+my-password*.txt
+password-list*.txt
+**/passwords/
 
 # Database files and backups
 *.db
@@ -72,6 +115,16 @@ api-keys.json
 *.dump
 *.bak
 *.backup
+*.old
+*.orig
+*.bak.gz
+**/db/backups/
+**/database/backups/
+*.db-journal
+*.db-wal
+*.db-shm
+pgdata/
+postgres-data/
 
 # Data files
 *.dat
@@ -81,12 +134,19 @@ data/
 *.tsv
 *.json.gz
 *.tar.gz
+**/private-data/
+**/sensitive-data/
+**/user-data/
+**/private/
+**/confidential/
+**/exports/
+**/backups/
 
 # Docker secrets
 docker-compose.override.yml
 docker-compose.local.yml
 .dockerignore.local
-secrets/
+**/secrets/
 
 # Terraform/Infrastructure
 *.tfvars
@@ -111,9 +171,26 @@ secrets.yml
 !template-secret.yml
 !*-secret.example.yaml
 !*-secret.example.yml
+
+# CI/CD and Deployment
+.circleci/local.yml
+.travis.local.yml
+gitlab-ci.local.yml
+**/.deploy-keys/
+deploy-key*.pem
+deploy-key*.key
+deploy-key*.json
+deployment-config.local.*
+ansible-vault-password*.txt
+vault-password*.txt
+**/ansible/vault-pass
+**/.ansible-vault
+
 # IDE and editor files
 .vscode/
+.vscode/settings.local.json
 .idea/
+.idea/workspace.xml.local
 *.swp
 *.swo
 *~
@@ -144,3 +221,15 @@ Thumbs.db
 # Test coverage
 **/coverage/
 .nyc_output/
+
+# Test data and mocks (that might contain sensitive data)
+**/test-data/private/
+**/test-data/secrets/
+**/fixtures/private/
+**/mocks/secrets/
+test-keys*.json
+test-credentials*.json
+mock-private-keys*.json
+# But allow safe test fixtures
+!**/test-data/**/*.example.*
+!**/fixtures/**/*.example.*
