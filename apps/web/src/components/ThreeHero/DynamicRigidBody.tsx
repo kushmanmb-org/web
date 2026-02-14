@@ -10,13 +10,18 @@ export const DynamicRigidBody = forwardRef<RapierRigidBody, RigidBodyProps>(
     const [RigidBodyDynamic, setRigidBody] = useState<typeof RigidBody>();
     const { logError } = useErrors();
 
-    // Import needs to happen on render
+    // Import needs to happen on render with async/await
     useEffect(() => {
-      import('@react-three/rapier')
-        .then((mod) => {
+      async function loadRigidBody() {
+        try {
+          const mod = await import('@react-three/rapier');
           setRigidBody(() => mod.RigidBody);
-        })
-        .catch((error) => logError(error, 'Failed to load RigidBody'));
+        } catch (error) {
+          logError(error, 'Failed to load RigidBody');
+        }
+      }
+
+      void loadRigidBody();
     }, [logError]);
 
     if (!RigidBodyDynamic) return null;

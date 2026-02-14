@@ -95,11 +95,18 @@ export default function useSetPrimaryBasename({ secondaryUsername }: UseSetPrima
   }, [address, secondaryUsername, secondaryUsernameChain.id, signMessageAsync]);
 
   useEffect(() => {
-    if (transactionIsSuccess) {
-      refetchPrimaryUsername()
-        .then()
-        .catch((error) => logError(error, 'failed to refetch username'));
+    // Refetch the primary username after a successful transaction
+    async function handleRefetch() {
+      if (!transactionIsSuccess) return;
+
+      try {
+        await refetchPrimaryUsername();
+      } catch (error) {
+        logError(error, 'failed to refetch username');
+      }
     }
+
+    void handleRefetch();
   }, [logError, refetchPrimaryUsername, transactionIsSuccess]);
 
   const setPrimaryName = useCallback(async (): Promise<boolean | undefined> => {

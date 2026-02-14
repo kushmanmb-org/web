@@ -112,13 +112,17 @@ export default function NeynarCast({
   const [data, setData] = useState<NeynarCastData['cast']>();
   const { logError } = useErrors();
   useEffect(() => {
-    fetchCast({ type, identifier })
-      .then((result) => {
+    // Fetch Neynar cast data with async/await
+    async function loadCast() {
+      try {
+        const result = await fetchCast({ type, identifier });
         if (result) setData(result);
-      })
-      .catch((error) => {
+      } catch (error) {
         logError(error, 'Failed to load Cast');
-      });
+      }
+    }
+
+    void loadCast();
   }, [identifier, logError, type]);
 
   const onClickCast = useCallback(

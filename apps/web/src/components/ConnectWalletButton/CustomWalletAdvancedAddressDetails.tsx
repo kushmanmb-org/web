@@ -11,17 +11,18 @@ export function CustomWalletAdvancedAddressDetails() {
 
   const [, copy] = useCopyToClipboard();
   const handleCopyAddress = useCallback(() => {
-    copy(String(address))
-      .then(() => {
+    // Handle async operation with void to acknowledge we're intentionally not awaiting
+    void (async () => {
+      try {
+        await copy(String(address));
         setCopyText('Copied');
-      })
-      .catch((err) => {
+      } catch (err) {
         setCopyText('Failed to copy');
         console.error('Failed to copy address:', err);
-      })
-      .finally(() => {
+      } finally {
         setTimeout(() => setCopyText('Copy'), 2000);
-      });
+      }
+    })();
   }, [address, copy]);
 
   if (!address || !chain) {

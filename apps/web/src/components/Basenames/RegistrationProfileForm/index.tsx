@@ -73,11 +73,14 @@ export default function RegistrationProfileForm() {
       }
 
       if (currentFormStep === FormSteps.Keywords) {
-        writeTextRecords()
-          .then()
-          .catch((error) => {
+        // Handle async operation with void to acknowledge we're intentionally not awaiting
+        void (async () => {
+          try {
+            await writeTextRecords();
+          } catch (error) {
             logError(error, 'Failed to write text records');
-          });
+          }
+        })();
       }
 
       event.preventDefault();
