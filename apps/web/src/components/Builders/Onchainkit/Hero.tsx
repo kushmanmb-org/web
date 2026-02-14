@@ -1,25 +1,21 @@
-'use client';
-
 import { ButtonVariants } from 'apps/web/src/components/base-org/Button/types';
 import Title from 'apps/web/src/components/base-org/typography/Title';
 import { TitleLevel } from 'apps/web/src/components/base-org/typography/Title/types';
 import Image, { StaticImageData } from 'next/image';
 import onchainkit from 'apps/web/src/components/Builders/Onchainkit/onchainkit.svg';
 import { ButtonWithLinkAndEventLogging } from 'apps/web/src/components/Button/ButtonWithLinkAndEventLogging';
-import { useCallback, useState } from 'react';
 import { Icon } from 'apps/web/src/components/Icon/Icon';
+import { useCopyToClipboard } from 'apps/web/src/hooks/useCopyToClipboard';
+import { useCallback } from 'react';
 
 const ONCHAINKIT_DOCS_LINK = 'https://docs.base.org/builderkits/onchainkit/getting-started';
 const ONCHAINKIT_GITHUB_LINK = 'https://github.com/coinbase/onchainkit';
 
 export function Hero() {
-  const [hasCopied, setHasCopied] = useState(false);
-
+  const { hasCopied, copyToClipboard } = useCopyToClipboard();
   const handleCopy = useCallback(() => {
-    void navigator.clipboard.writeText('npm create onchain');
-    setHasCopied(true);
-    setTimeout(() => setHasCopied(false), 2000); // Reset after 2 seconds
-  }, []);
+    copyToClipboard('npm create onchain');
+  }, [copyToClipboard]);
 
   return (
     <div className="flex flex-col gap-2 pt-20 sm:items-center">

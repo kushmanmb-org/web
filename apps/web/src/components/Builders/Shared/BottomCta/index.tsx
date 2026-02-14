@@ -1,19 +1,15 @@
-'use client';
-
 import { ButtonVariants } from 'apps/web/src/components/base-org/Button/types';
 import { ButtonWithLinkAndEventLogging } from 'apps/web/src/components/Button/ButtonWithLinkAndEventLogging';
-import { useCallback, useState } from 'react';
 import { Icon } from 'apps/web/src/components/Icon/Icon';
 import { CtaBanner } from 'apps/web/src/components/Builders/Shared/BottomCta/CtaBanner';
+import { useCopyToClipboard } from 'apps/web/src/hooks/useCopyToClipboard';
+import { useCallback } from 'react';
 
 export function BottomCta() {
-  const [hasCopied, setHasCopied] = useState(false);
-
+  const { hasCopied, copyToClipboard } = useCopyToClipboard();
   const handleCopy = useCallback(() => {
-    void navigator.clipboard.writeText('npm create onchain');
-    setHasCopied(true);
-    setTimeout(() => setHasCopied(false), 2000); // Reset after 2 seconds
-  }, []);
+    copyToClipboard('npm create onchain');
+  }, [copyToClipboard]);
 
   return (
     <CtaBanner

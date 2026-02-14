@@ -31,6 +31,10 @@ import { formatEtherPrice } from 'apps/web/src/utils/formatEtherPrice';
 import { formatUsdPrice } from 'apps/web/src/utils/formatUsdPrice';
 import { ConnectButton, useConnectModal } from '@rainbow-me/rainbowkit';
 import { Button, ButtonSizes, ButtonVariants } from 'apps/web/src/components/Button/Button';
+import {
+  useSwitchToBasenameChain,
+  useYearSelectionCallbacks,
+} from 'apps/web/src/components/Basenames/basenameFormUtils';
 
 export default function RegistrationForm() {
   const { chain: connectedChain, address } = useAccount();
@@ -41,10 +45,7 @@ export default function RegistrationForm() {
   const { basenameChain } = useBasenameChain();
   const { switchChain } = useSwitchChain();
 
-  const switchToIntendedNetwork = useCallback(
-    () => switchChain({ chainId: basenameChain.id }),
-    [basenameChain.id, switchChain],
-  );
+  const switchToIntendedNetwork = useSwitchToBasenameChain(switchChain, basenameChain.id);
 
   const {
     selectedName,
@@ -72,17 +73,10 @@ export default function RegistrationForm() {
     setLearnMoreAboutDiscountsModalOpen((open) => !open);
   }, [logEventWithContext, setLearnMoreAboutDiscountsModalOpen]);
 
-  const increment = useCallback(() => {
-    logEventWithContext('registration_form_increment_year', ActionType.click);
-
-    setYears((n) => n + 1);
-  }, [logEventWithContext, setYears]);
-
-  const decrement = useCallback(() => {
-    logEventWithContext('registration_form_decement_year', ActionType.click);
-
-    setYears((n) => (n > 1 ? n - 1 : n));
-  }, [logEventWithContext, setYears]);
+  const { increment, decrement } = useYearSelectionCallbacks(setYears, {
+    onIncrement: () => logEventWithContext('registration_form_increment_year', ActionType.click),
+    onDecrement: () => logEventWithContext('registration_form_decrement_year', ActionType.click),
+  });
 
   const ethUsdPrice = useEthPriceFromUniswap();
   const { data: initialPrice } = useNameRegistrationPrice(selectedName, years);

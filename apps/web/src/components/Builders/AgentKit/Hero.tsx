@@ -1,5 +1,3 @@
-'use client';
-
 import { ButtonVariants } from 'apps/web/src/components/base-org/Button/types';
 import Title from 'apps/web/src/components/base-org/typography/Title';
 import { TitleLevel } from 'apps/web/src/components/base-org/typography/Title/types';
@@ -9,16 +7,14 @@ import { Demo } from 'apps/web/src/components/Builders/AgentKit/Demo';
 import { AGENTKIT_DOCS_LINK } from 'apps/web/src/components/Builders/AgentKit/links';
 import { Icon } from 'apps/web/src/components/Icon/Icon';
 import Image, { StaticImageData } from 'next/image';
-import { useCallback, useState } from 'react';
+import { useCopyToClipboard } from 'apps/web/src/hooks/useCopyToClipboard';
+import { useCallback } from 'react';
 
 export function Hero() {
-  const [hasCopied, setHasCopied] = useState(false);
-
+  const { hasCopied, copyToClipboard } = useCopyToClipboard();
   const handleCopy = useCallback(() => {
-    void navigator.clipboard.writeText('npx create-agentkit-app');
-    setHasCopied(true);
-    setTimeout(() => setHasCopied(false), 2000); // Reset after 2 seconds
-  }, []);
+    copyToClipboard('npx create-agentkit-app');
+  }, [copyToClipboard]);
   return (
     <div className="flex flex-col gap-2 pt-20 sm:items-center">
       <div className="flex items-center gap-2 pb-6 text-[#E66020]">

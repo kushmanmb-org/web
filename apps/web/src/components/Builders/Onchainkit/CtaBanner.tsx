@@ -1,22 +1,18 @@
-'use client';
-
 import { ButtonVariants } from 'apps/web/src/components/base-org/Button/types';
 import { CtaBanner as DefaultCtaBanner } from 'apps/web/src/components/Builders/Shared/CtaBanner';
 import { ButtonWithLinkAndEventLogging } from 'apps/web/src/components/Button/ButtonWithLinkAndEventLogging';
-import { useCallback, useState } from 'react';
 import { Icon } from 'apps/web/src/components/Icon/Icon';
+import { useCopyToClipboard } from 'apps/web/src/hooks/useCopyToClipboard';
+import { useCallback } from 'react';
 
 const ONCHAINKIT_DOCS_LINK = 'https://docs.base.org/builderkits/onchainkit/getting-started';
 const ONCHAINKIT_AI_DOCS_LINK = 'https://docs.base.org/builderkits/onchainkit/llms.txt';
 
 export function CtaBanner() {
-  const [hasCopied, setHasCopied] = useState(false);
-
+  const { hasCopied, copyToClipboard } = useCopyToClipboard();
   const handleCopy = useCallback(() => {
-    void navigator.clipboard.writeText('npm create onchain');
-    setHasCopied(true);
-    setTimeout(() => setHasCopied(false), 2000); // Reset after 2 seconds
-  }, []);
+    copyToClipboard('npm create onchain');
+  }, [copyToClipboard]);
 
   return (
     <DefaultCtaBanner

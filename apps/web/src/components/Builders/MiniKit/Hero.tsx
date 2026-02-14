@@ -1,7 +1,4 @@
-'use client';
-
 import Image, { StaticImageData } from 'next/image';
-import { useCallback, useState } from 'react';
 import { ButtonVariants } from 'apps/web/src/components/base-org/Button/types';
 import Title from 'apps/web/src/components/base-org/typography/Title';
 import { TitleLevel } from 'apps/web/src/components/base-org/typography/Title/types';
@@ -9,18 +6,17 @@ import { ButtonWithLinkAndEventLogging } from 'apps/web/src/components/Button/Bu
 import { HeaderAnimation } from 'apps/web/src/components/Builders/MiniKit/HeaderAnimation';
 import minikit from 'apps/web/src/components/Builders/MiniKit/minikit.svg';
 import { Icon } from 'apps/web/src/components/Icon/Icon';
+import { useCopyToClipboard } from 'apps/web/src/hooks/useCopyToClipboard';
+import { useCallback } from 'react';
 
 export const GET_STARTED_URL = 'https://docs.base.org/builderkits/minikit/overview';
 const MINIKIT_COMMAND = 'npx create-onchain --mini';
 
 export function Hero() {
-  const [hasCopied, setHasCopied] = useState(false);
-
+  const { hasCopied, copyToClipboard } = useCopyToClipboard();
   const handleCopy = useCallback(() => {
-    void navigator.clipboard.writeText(MINIKIT_COMMAND);
-    setHasCopied(true);
-    setTimeout(() => setHasCopied(false), 2000); // Reset after 2 seconds
-  }, []);
+    copyToClipboard(MINIKIT_COMMAND);
+  }, [copyToClipboard]);
 
   return (
     <div className="flex items-center justify-between gap-10 pt-20 max-sm:flex-col">

@@ -14,6 +14,10 @@ import { RenewalButton } from './RenewalButton';
 import { formatUsdPrice } from 'apps/web/src/utils/formatUsdPrice';
 import { formatEtherPrice } from 'apps/web/src/utils/formatEtherPrice';
 import YearSelector from 'apps/web/src/components/Basenames/YearSelector';
+import {
+  useSwitchToBasenameChain,
+  useYearSelectionCallbacks,
+} from 'apps/web/src/components/Basenames/basenameFormUtils';
 
 export default function RenewalForm() {
   const { chain: connectedChain, address } = useAccount();
@@ -24,23 +28,14 @@ export default function RenewalForm() {
 
   const { years, setYears, renewBasename, price, isPending, expirationDate } = useRenewal();
 
-  const switchToIntendedNetwork = useCallback(
-    () => switchChain({ chainId: basenameChain.id }),
-    [basenameChain.id, switchChain],
-  );
+  const switchToIntendedNetwork = useSwitchToBasenameChain(switchChain, basenameChain.id);
 
   const isOnSupportedNetwork = useMemo(
     () => connectedChain && supportedChainIds.includes(connectedChain.id),
     [connectedChain],
   );
 
-  const increment = useCallback(() => {
-    setYears((n) => n + 1);
-  }, [setYears]);
-
-  const decrement = useCallback(() => {
-    setYears((n) => (n > 1 ? n - 1 : n));
-  }, [setYears]);
+  const { increment, decrement } = useYearSelectionCallbacks(setYears);
 
   const ethUsdPrice = useEthPriceFromUniswap();
 
