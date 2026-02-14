@@ -56,6 +56,8 @@ export default function UserRegistrationForm() {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 8) {
       newErrors.password = 'Password must be at least 8 characters';
+    } else if (formData.password !== formData.password.trim()) {
+      newErrors.password = 'Password cannot have leading or trailing spaces';
     }
 
     // Confirm password validation

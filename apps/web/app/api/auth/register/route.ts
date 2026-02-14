@@ -40,10 +40,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate password length
+    // Validate password length and format
     if (typeof password !== 'string' || password.length < 8) {
       return NextResponse.json(
         { error: 'Password must be at least 8 characters' },
+        { status: 400 }
+      );
+    }
+
+    // Validate password does not have leading or trailing whitespace
+    if (password !== password.trim()) {
+      return NextResponse.json(
+        { error: 'Password cannot have leading or trailing spaces' },
         { status: 400 }
       );
     }
