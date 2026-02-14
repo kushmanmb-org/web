@@ -42,7 +42,7 @@ jobs:
           echo "NEXT_PUBLIC_E2E_TEST=true" >> .env
 
       - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1.4.0
+        uses: foundry-rs/foundry-toolchain@82dee4ba654bd2146511f85f0d013af94670c4de  # v1.4.0
 
       - name: Prepare MetaMask extension
         run: yarn e2e:metamask:prepare

@@ -26,7 +26,7 @@ jobs:
         id: algolia_config
         run: echo "config=$(cat apps/base-docs/algolia.json | jq -r tostring)" >> $GITHUB_ENV
       - name: Push indices to Algolia
-        uses: signcl/docsearch-scraper-action@master
+        uses: signcl/docsearch-scraper-action@816fdbb24b06e441f631f1d8de37abb34448c474  # master
         env:
           APPLICATION_ID: ${{ secrets.ALGOLIA_APPLICATION_ID }}
           API_KEY: ${{ secrets.ALGOLIA_API_KEY }}
