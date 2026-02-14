@@ -1,6 +1,7 @@
 *.graphql
 **/persisted_queries.json
 **/__generated__
+.prettierrc
 
 # Nx
 .docusaurus

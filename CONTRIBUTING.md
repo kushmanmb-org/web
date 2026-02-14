@@ -8,9 +8,9 @@ The following is a set of guidelines for contributing to Base Web. These are jus
 
 - [Code of Conduct](#code-of-conduct)
 - [How Can I Contribute?](#how-can-i-contribute)
-    - [Reporting Bugs](#reporting-bugs)
-    - [Suggesting Enhancements](#suggesting-enhancements)
-    - [Pull Requests](#pull-requests)
+  - [Reporting Bugs](#reporting-bugs)
+  - [Suggesting Enhancements](#suggesting-enhancements)
+  - [Pull Requests](#pull-requests)
 - [Coding Conventions](#coding-conventions)
 
 ## Code of Conduct
@@ -50,7 +50,7 @@ This ensures your commits are properly attributed to you.
 
 3. **Commit your changes**: Commit your changes using a descriptive commit message.
 
-4. **Open a Pull Request**: Describe what you did in the pull request description. Mention the issue number if your pull request is related to an existing issue. 
+4. **Open a Pull Request**: Describe what you did in the pull request description. Mention the issue number if your pull request is related to an existing issue.
 
 5. **Include Screenshots**: If your pull request includes any visual changes to the project, please include before and after screenshots in your pull request description to help us better understand the changes.
 
@@ -61,6 +61,22 @@ This ensures your commits are properly attributed to you.
 - Use clear and descriptive variable names.
 - Comment your code where necessary.
 - Follow the lint configurations.
+
+### Code Formatting
+
+This project uses [Prettier](https://prettier.io/) for consistent code formatting. The configuration is defined in `.prettierrc`.
+
+**Automatic formatting:**
+
+- Pre-commit hooks will automatically format your code using Prettier before commits.
+- Code is formatted via `lint-staged` when you commit changes.
+
+**Manual formatting:**
+
+- You can manually format files using your editor's Prettier integration.
+- Most editors have Prettier plugins that can format on save.
+
+**Important:** Please ensure your code is properly formatted before submitting a pull request. This helps maintain consistency across the codebase.
 
 ---
 
