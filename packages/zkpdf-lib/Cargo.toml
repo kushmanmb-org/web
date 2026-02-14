@@ -1,0 +1,7 @@
+[package]
+name = "zkpdf-wrapper"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+zkpdf-lib = { git = "https://github.com/privacy-ethereum/zkpdf", rev = "b222ca31409be4c51bad948c84d08c07272c68e2", subdir = "circuits/lib" }
