@@ -25,6 +25,14 @@ const ETH_REGISTRAR_CONTROLLER_2 = '0x253553366da8546fc250f225fe3d25d0c782303b';
 const BASENAMES_REGISTRAR_CONTROLLER = '0x4ccb0bb02fcaba27e82a56646e81d8c5bc4119a5'; // Basenames RegistrarController
 const BASENAMES_EA_REGISTRAR_CONTROLLER = '0xd3e6775ed9b7dc12b205c8e608dc3767b9e5efda'; // Basenames EARegistrarController
 
+// ENS Addresses Set for O(1) lookups
+const ENS_ADDRESSES = new Set([
+  ETH_REGISTRAR_CONTROLLER_1,
+  ETH_REGISTRAR_CONTROLLER_2,
+  BASENAMES_REGISTRAR_CONTROLLER,
+  BASENAMES_EA_REGISTRAR_CONTROLLER,
+]);
+
 // Lending and Borrowing
 const MOONWELL_WETH_UNWRAPPER = '0x1382cff3cee10d283dcca55a30496187759e4caf'; // Base Moonwell WETH Unwrapper
 
@@ -137,12 +145,20 @@ export default function UsernameProfileSectionHeatmap() {
       const firstTransactionDate = new Date(Math.min(...timestamps) * 1000);
       const lastTransactionDate = new Date(Math.max(...timestamps) * 1000);
 
-      const uniqueActiveDaysSet = new Set(
-        filteredTransactions.map((tx) => new Date(parseInt(tx.timeStamp, 10) * 1000).toDateString()),
-      );
+      // Optimize: avoid creating Date objects twice
+      // Store the first occurrence of each unique day's Date object
+      const uniqueDatesMap = new Map<string, Date>();
+      filteredTransactions.forEach((tx) => {
+        const timestamp = parseInt(tx.timeStamp, 10) * 1000;
+        const date = new Date(timestamp);
+        const dateStr = date.toDateString();
+        if (!uniqueDatesMap.has(dateStr)) {
+          uniqueDatesMap.set(dateStr, date);
+        }
+      });
 
-      const sortedDates = Array.from(uniqueActiveDaysSet)
-        .map((dateStr) => new Date(dateStr))
+      // Use the cached Date objects directly instead of recreating them
+      const sortedDates = Array.from(uniqueDatesMap.values())
         .sort((a, b) => a.getTime() - b.getTime());
 
       let longestStreakDays = 0;
@@ -161,7 +177,7 @@ export default function UsernameProfileSectionHeatmap() {
       longestStreakDays = Math.max(longestStreakDays, streak);
 
       return {
-        uniqueActiveDays: uniqueActiveDaysSet.size,
+        uniqueActiveDays: uniqueDatesMap.size,
         longestStreakDays,
         currentStreakDays:
           sortedDates[sortedDates.length - 1].toDateString() === new Date().toDateString()
@@ -358,36 +374,44 @@ export default function UsernameProfileSectionHeatmap() {
         setCurrentStreak(currentStreakDays);
         setActivityPeriod(activity);
 
-        setTokenSwapCount(
-          allTransactions.filter(
-            (tx) =>
+        // Optimize: single pass through transactions instead of multiple filters
+        const counts = allTransactions.reduce(
+          (acc, tx) => {
+            // Token swap count
+            if (
               ((tx.functionName &&
                 SWAP_FUNCTION_NAMES.some((fn) => tx.functionName?.includes(fn))) ??
                 tx.to === UNISWAP_ROUTER) ||
               tx.to === AERODROME_ROUTER ||
-              tx.to === ONEINCH_ROUTER,
-          ).length,
+              tx.to === ONEINCH_ROUTER
+            ) {
+              acc.tokenSwap++;
+            }
+            
+            // ENS count
+            if (ENS_ADDRESSES.has(tx.to)) {
+              acc.ens++;
+            }
+            
+            // Bridge count
+            if (bridges.has(tx.to)) {
+              acc.bridge++;
+            }
+            
+            // Lend count
+            if (lendBorrowEarn.has(tx.to) || tx.from === MOONWELL_WETH_UNWRAPPER) {
+              acc.lend++;
+            }
+            
+            return acc;
+          },
+          { tokenSwap: 0, ens: 0, bridge: 0, lend: 0 },
         );
 
-        // ENS count calculation
-        setEnsCount(
-          allTransactions.filter((tx) =>
-            [
-              ETH_REGISTRAR_CONTROLLER_1,
-              ETH_REGISTRAR_CONTROLLER_2,
-              BASENAMES_REGISTRAR_CONTROLLER,
-              BASENAMES_EA_REGISTRAR_CONTROLLER,
-            ].includes(tx.to),
-          ).length,
-        );
-
-        setBridgeCount(allTransactions.filter((tx) => bridges.has(tx.to)).length);
-
-        setLendCount(
-          allTransactions.filter(
-            (tx) => lendBorrowEarn.has(tx.to) || tx.from === MOONWELL_WETH_UNWRAPPER,
-          ).length,
-        );
+        setTokenSwapCount(counts.tokenSwap);
+        setEnsCount(counts.ens);
+        setBridgeCount(counts.bridge);
+        setLendCount(counts.lend);
 
         setBuildCount(
           allEthereumDeployments.length + allBaseDeployments.length + allSepoliaDeployments.length,

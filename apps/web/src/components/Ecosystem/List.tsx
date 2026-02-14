@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { AnimatePresence, motion, cubicBezier } from 'motion/react';
 import EcosystemCard from './Card';
 import { EcosystemApp } from 'apps/web/src/components/Ecosystem/Content';
-import { Dispatch, SetStateAction, useCallback } from 'react';
+import { Dispatch, SetStateAction, useCallback, memo } from 'react';
 import {
   Button,
   ButtonSizes,
@@ -23,7 +23,7 @@ const cardAnimations = {
   exit: { opacity: 0 },
 };
 
-function AnimatedEcosystemCard({ app }: { app: EcosystemApp }) {
+const AnimatedEcosystemCard = memo(({ app }: { app: EcosystemApp }) => {
   return (
     <motion.div
       layout
@@ -36,7 +36,9 @@ function AnimatedEcosystemCard({ app }: { app: EcosystemApp }) {
       <EcosystemCard {...app} />
     </motion.div>
   );
-}
+});
+
+AnimatedEcosystemCard.displayName = 'AnimatedEcosystemCard';
 
 export function List({
   selectedCategories,
