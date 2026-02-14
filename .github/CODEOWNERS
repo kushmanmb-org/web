@@ -1,1 +1,25 @@
+# Code Owners for Base Web Repository
+# These owners will be automatically requested for review when someone opens a pull request
+
+# Apps
 ./apps/web/ @base-org/based-apps-fe-reviewers
+./apps/bridge/ @base-org/based-apps-fe-reviewers
+
+# Libraries
+./libs/ @base-org/based-apps-fe-reviewers
+
+# Critical Configuration Files
+package.json @base-org/based-apps-fe-reviewers
+yarn.lock @base-org/based-apps-fe-reviewers
+tsconfig*.json @base-org/based-apps-fe-reviewers
+
+# GitHub Configuration
+.github/ @base-org/based-apps-fe-reviewers
+.github/workflows/ @base-org/based-apps-fe-reviewers
+.github/rulesets/ @base-org/based-apps-fe-reviewers
+
+# Tools and Build Configuration
+./tools/ @base-org/based-apps-fe-reviewers
+babel.config.js @base-org/based-apps-fe-reviewers
+prettier.config.js @base-org/based-apps-fe-reviewers
+.eslintrc.js @base-org/based-apps-fe-reviewers

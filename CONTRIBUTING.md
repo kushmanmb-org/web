@@ -62,6 +62,18 @@ This ensures your commits are properly attributed to you.
 - Comment your code where necessary.
 - Follow the lint configurations.
 
+## Branch Protection and Rulesets
+
+This repository uses GitHub rulesets to enforce branch protection and quality standards. Key points:
+
+- **Protected Branches**: `main`, `master`, `release/*`, and `hotfix/*` branches are protected
+- **Required Reviews**: Pull requests require at least 1 approving review (2 for critical paths)
+- **Status Checks**: All CI workflows (`build`, `Jest`, `e2e`) must pass before merging
+- **Code Owners**: Changes to critical files require review from code owners (see `.github/CODEOWNERS`)
+- **Protected Paths**: Critical configuration files (package.json, yarn.lock, .github/*, tsconfig files) have additional protection
+
+For detailed information about rulesets, see [`.github/rulesets/README.md`](.github/rulesets/README.md).
+
 ---
 
 Feel free to customize this template according to the specific needs and nuances of Base Web. A well-crafted `CONTRIBUTING.md` can help your project attract quality contributions and foster a collaborative community.
