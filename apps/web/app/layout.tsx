@@ -4,7 +4,6 @@ import AppProviders from 'apps/web/app/AppProviders';
 
 import localFont from 'next/font/local';
 import DatadogInit from 'apps/web/app/datadog';
-import { Inter, Inter_Tight, Roboto_Mono } from 'next/font/google';
 
 const GOOGLE_ANALYTICS_ID = 'G-D1QGEV3B07';
 const googleAnalyticsInitScriptContent = {
@@ -175,22 +174,25 @@ const britney = localFont({
   variable: '--font-britney',
 });
 
-const interTight = Inter_Tight({
+const interTight = localFont({
+  src: '../src/fonts/inter-tight-400-latin.woff2',
   variable: '--font-inter-tight',
-  weight: ['400'],
-  subsets: ['latin'],
+  weight: '400',
+  display: 'swap',
 });
 
-const inter = Inter({
+const inter = localFont({
+  src: '../src/fonts/inter-400-latin.woff2',
   variable: '--font-inter',
-  weight: ['400'],
-  subsets: ['latin'],
+  weight: '400',
+  display: 'swap',
 });
 
-const robotoMono = Roboto_Mono({
+const robotoMono = localFont({
+  src: '../src/fonts/roboto-mono-latin.woff2',
   variable: '--font-roboto-mono',
-  weight: ['400'],
-  subsets: ['latin'],
+  weight: '100 700',
+  display: 'swap',
 });
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
