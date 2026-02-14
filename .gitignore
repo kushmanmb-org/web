@@ -186,6 +186,18 @@ vault-password*.txt
 **/ansible/vault-pass
 **/.ansible-vault
 
+# GitHub Actions and Runners
+.github/actions-runner/
+actions-runner/
+_work/
+_diag/
+runner-config.local.yml
+.runner
+.credentials
+.credentials_rsaparams
+runner.env
+.env.runner
+
 # IDE and editor files
 .vscode/
 .vscode/settings.local.json

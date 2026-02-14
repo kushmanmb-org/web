@@ -1,0 +1,185 @@
+name: Build with Self-Hosted (Example)
+
+# This is an EXAMPLE workflow demonstrating self-hosted runner usage
+# It's currently configured to use GitHub-hosted runners
+# To enable self-hosted runners, update the 'runs-on' configuration
+
+on:
+  workflow_dispatch:
+    inputs:
+      use-self-hosted:
+        description: 'Use self-hosted runners'
+        required: false
+        type: boolean
+        default: false
+  # Uncomment to enable on push/PR
+  # push:
+  #   branches: [master]
+  # pull_request:
+  #   branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Quick checks on GitHub-hosted runners (fast, minimal cost)
+  quick-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js with Yarn
+        uses: ./.github/actions/setup-node-yarn
+        with:
+          node-version: 24.x
+          
+      - name: Lint
+        run: yarn lint
+        
+      - name: Type check
+        run: yarn workspace @app/web tsc --noEmit
+
+  # Heavy build job (candidate for self-hosted runners)
+  build:
+    # Dynamic runner selection based on input
+    runs-on: ${{ inputs.use-self-hosted && '[self-hosted, linux, x64]' || 'ubuntu-latest' }}
+    timeout-minutes: 30
+    needs: quick-checks
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Display runner info
+        run: |
+          echo "Runner: ${{ runner.name }}"
+          echo "OS: ${{ runner.os }}"
+          echo "Architecture: ${{ runner.arch }}"
+          echo "Using self-hosted: ${{ inputs.use-self-hosted }}"
+        
+      - name: Setup Node.js with Yarn
+        uses: ./.github/actions/setup-node-yarn
+        with:
+          node-version: 24.x
+          
+      - name: Build
+        run: yarn build
+        
+      - name: Cache build output
+        if: success()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            apps/*/dist
+            apps/*/build
+            apps/*/.next
+          key: build-${{ github.sha }}
+
+  # Resource-intensive tests (good candidate for self-hosted)
+  test:
+    # To enable self-hosted, change to: runs-on: [self-hosted, linux, x64, high-memory]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: build
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js with Yarn
+        uses: ./.github/actions/setup-node-yarn
+        with:
+          node-version: 24.x
+          
+      - name: Restore build cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            apps/*/dist
+            apps/*/build
+            apps/*/.next
+          key: build-${{ github.sha }}
+          
+      - name: Run tests
+        run: yarn test
+
+  # Example: GPU-accelerated job (requires self-hosted with GPU)
+  # gpu-job:
+  #   runs-on: [self-hosted, linux, gpu]
+  #   timeout-minutes: 20
+  #   if: inputs.use-self-hosted
+  #   
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #       
+  #     - name: Check GPU availability
+  #       run: |
+  #         nvidia-smi || echo "No GPU available"
+  #         
+  #     - name: Run GPU-accelerated tasks
+  #       run: |
+  #         echo "This job would run GPU-accelerated workloads"
+
+  # Example: Database integration tests (requires network access)
+  # integration-tests:
+  #   runs-on: [self-hosted, linux, x64]
+  #   timeout-minutes: 20
+  #   if: inputs.use-self-hosted
+  #   
+  #   services:
+  #     postgres:
+  #       image: postgres:15
+  #       env:
+  #         POSTGRES_PASSWORD: postgres
+  #       options: >-
+  #         --health-cmd pg_isready
+  #         --health-interval 10s
+  #         --health-timeout 5s
+  #         --health-retries 5
+  #   
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #       
+  #     - name: Setup Node.js with Yarn
+  #       uses: ./.github/actions/setup-node-yarn
+  #       with:
+  #         node-version: 24.x
+  #         
+  #     - name: Run integration tests
+  #       env:
+  #         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test
+  #       run: yarn test:integration
+
+  summary:
+    runs-on: ubuntu-latest
+    needs: [quick-checks, build, test]
+    if: always()
+    timeout-minutes: 5
+    
+    steps:
+      - name: Summary
+        run: |
+          echo "## Workflow Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Quick checks: ${{ needs.quick-checks.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Build: ${{ needs.build.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Test: ${{ needs.test.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Used self-hosted runners: ${{ inputs.use-self-hosted }}" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.quick-checks.result }}" == "success" ] && \
+             [ "${{ needs.build.result }}" == "success" ] && \
+             [ "${{ needs.test.result }}" == "success" ]; then
+            echo "✅ All jobs completed successfully" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Some jobs failed" >> $GITHUB_STEP_SUMMARY
+          fi

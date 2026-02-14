@@ -171,8 +171,64 @@ When creating a new workflow, ensure you:
 - Monitor workflow run times and adjust timeouts if needed
 - Check GitHub's changelog for Actions updates
 
+## Self-Hosted Runners
+
+### When to Use Self-Hosted Runners
+
+Self-hosted runners provide additional control and can be beneficial for:
+
+- **Resource-intensive builds**: Jobs requiring more CPU, memory, or disk space than GitHub-hosted runners provide
+- **Long-running jobs**: Tasks that exceed GitHub-hosted runner time limits
+- **Custom hardware/software**: Access to specific tools, hardware (GPUs), or software not available on GitHub-hosted runners
+- **Network requirements**: Access to internal resources or private networks
+- **Cost optimization**: High-volume workflows that would be more cost-effective on owned infrastructure
+
+### Self-Hosted Runner Best Practices
+
+1. **Security First**
+   - **Never use self-hosted runners for public repositories** (risk of malicious code execution)
+   - Run runners as unprivileged users
+   - Use runner groups for access control
+   - Enable ephemeral runners for sensitive operations
+   - Regularly update runner software and dependencies
+
+2. **Use Appropriate Labels**
+   ```yaml
+   runs-on: [self-hosted, linux, x64, high-memory]
+   ```
+   - Include OS, architecture, and capability labels
+   - Create meaningful labels for routing jobs
+
+3. **Monitor Runner Health**
+   - Use provided health check workflows
+   - Monitor disk space, memory, and CPU usage
+   - Set up alerting for runner failures
+   - Review logs regularly
+
+4. **Maintain Runners**
+   - Regular updates of runner software
+   - Clean up old caches and artifacts
+   - Monitor for security updates
+   - Schedule maintenance windows
+
+5. **Fallback Strategy**
+   ```yaml
+   runs-on: ${{ github.event_name == 'schedule' && 'self-hosted' || 'ubuntu-latest' }}
+   ```
+   - Consider fallback to GitHub-hosted runners
+   - Use labels to route specific jobs
+
+### Available Self-Hosted Runner Workflows
+
+- **self-hosted-runner-setup.yml**: Manual runner management and health checks
+- **self-hosted-runner-health.yml**: Automated health monitoring (weekly schedule)
+
+For detailed setup instructions, see [SELF_HOSTED_RUNNERS.md](SELF_HOSTED_RUNNERS.md).
+
 ## Resources
 
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
 - [GitHub Actions Best Practices](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions)
 - [Workflow Syntax Reference](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions)
+- [Self-Hosted Runners Guide](SELF_HOSTED_RUNNERS.md)
+- [Self-Hosted Runners Documentation](https://docs.github.com/en/actions/hosting-your-own-runners)

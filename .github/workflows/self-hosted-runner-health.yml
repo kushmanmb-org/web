@@ -1,0 +1,153 @@
+name: Self-Hosted Runner Health Monitor
+
+# This workflow monitors the health of self-hosted runners
+# and can be scheduled to run periodically
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Run health check every Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+
+permissions:
+  contents: read
+  issues: write  # To create issues if runners are unhealthy
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  # Job for GitHub-hosted runners (as baseline/fallback)
+  github-hosted-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: GitHub-Hosted Runner Status
+        run: |
+          echo "=== GitHub-Hosted Runner Check ==="
+          echo "✅ GitHub-hosted runners are available"
+          echo "Runner: ${{ runner.name }}"
+          echo "OS: ${{ runner.os }}"
+          echo "Architecture: ${{ runner.arch }}"
+
+  # Example self-hosted runner health check
+  # To enable this, uncomment and ensure you have self-hosted runners configured
+  # self-hosted-check:
+  #   runs-on: [self-hosted, linux]
+  #   timeout-minutes: 10
+  #   
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+  #       
+  #     - name: Self-Hosted Runner Health Check
+  #       run: |
+  #         echo "=== Self-Hosted Runner Health Check ==="
+  #         echo "Runner: ${{ runner.name }}"
+  #         echo "OS: ${{ runner.os }}"
+  #         echo "Architecture: ${{ runner.arch }}"
+  #         echo ""
+  #         echo "System Resources:"
+  #         echo "Disk Space:"
+  #         df -h
+  #         echo ""
+  #         echo "Memory:"
+  #         free -h
+  #         echo ""
+  #         echo "CPU:"
+  #         nproc
+  #         lscpu | grep "Model name"
+  #         echo ""
+  #         echo "Docker Status (if applicable):"
+  #         if command -v docker &> /dev/null; then
+  #           docker --version
+  #           docker ps -a --format "table {{.Names}}\t{{.Status}}\t{{.Image}}"
+  #         else
+  #           echo "Docker not installed"
+  #         fi
+  #         echo ""
+  #         echo "Runner Process:"
+  #         ps aux | grep -i "Runner.Listener" | grep -v grep || echo "Runner process not found in ps output"
+  #         echo ""
+  #         echo "✅ Health check completed"
+  #     
+  #     - name: Check Disk Space
+  #       run: |
+  #         # Check if disk space is below 20%
+  #         DISK_USAGE=$(df -h / | awk 'NR==2 {print $5}' | sed 's/%//')
+  #         echo "Disk usage: ${DISK_USAGE}%"
+  #         
+  #         if [ "$DISK_USAGE" -gt 80 ]; then
+  #           echo "⚠️ WARNING: Disk usage is above 80%"
+  #           echo "::warning::Disk usage is at ${DISK_USAGE}%. Consider cleaning up."
+  #         else
+  #           echo "✅ Disk usage is healthy"
+  #         fi
+  #     
+  #     - name: Check Memory
+  #       run: |
+  #         # Check available memory
+  #         AVAILABLE_MEM=$(free -m | awk 'NR==2 {print $7}')
+  #         TOTAL_MEM=$(free -m | awk 'NR==2 {print $2}')
+  #         MEM_PERCENT=$((100 * AVAILABLE_MEM / TOTAL_MEM))
+  #         
+  #         echo "Available memory: ${AVAILABLE_MEM}MB / ${TOTAL_MEM}MB (${MEM_PERCENT}% free)"
+  #         
+  #         if [ "$MEM_PERCENT" -lt 20 ]; then
+  #           echo "⚠️ WARNING: Available memory is below 20%"
+  #           echo "::warning::Available memory is at ${MEM_PERCENT}%. Runner may need more resources."
+  #         else
+  #           echo "✅ Memory is healthy"
+  #         fi
+  #     
+  #     - name: Verify Node.js
+  #       run: |
+  #         echo "Node.js version:"
+  #         if command -v node &> /dev/null; then
+  #           node --version
+  #         else
+  #           echo "⚠️ Node.js not found"
+  #         fi
+  #     
+  #     - name: Verify Yarn
+  #       run: |
+  #         echo "Yarn version:"
+  #         if command -v yarn &> /dev/null; then
+  #           yarn --version
+  #         else
+  #           echo "⚠️ Yarn not found"
+  #         fi
+  #     
+  #     - name: Clean Up Old Workflows
+  #       run: |
+  #         echo "Cleaning up old workflow artifacts..."
+  #         # Clean up old build artifacts older than 7 days
+  #         find ${{ runner.temp }} -type f -mtime +7 -delete 2>/dev/null || true
+  #         echo "✅ Cleanup completed"
+
+  report:
+    runs-on: ubuntu-latest
+    needs: [github-hosted-check]
+    # Uncomment to wait for self-hosted check: needs: [github-hosted-check, self-hosted-check]
+    if: always()
+    timeout-minutes: 5
+    
+    steps:
+      - name: Report Status
+        run: |
+          echo "=== Runner Health Report ==="
+          echo "GitHub-hosted runners: ${{ needs.github-hosted-check.result }}"
+          # Uncomment when self-hosted runners are configured
+          # echo "Self-hosted runners: ${{ needs.self-hosted-check.result }}"
+          echo ""
+          if [ "${{ needs.github-hosted-check.result }}" == "success" ]; then
+            echo "✅ All monitored runners are healthy"
+          else
+            echo "❌ Some runners reported issues"
+            echo "::error::Runner health check failed"
+          fi
